@@ -7,12 +7,18 @@
           </md-button>
           <span class="md-title">Game Review</span>
         <div class="md-toolbar-section-end">
-          <md-button @click="goTo(4)" class="md-icon-button" v-if="user.loggedIn">
-            Login
+          <md-button @click="logout" v-if="user.loggedIn">
+            Logout
           </md-button>
-          <md-button @click="goTo(5)" class="md-icon-button" v-if="user.loggedIn">
-            Register
-          </md-button>
+          <template v-else>
+            <md-button @click="goTo(4)" >
+              Login
+            </md-button>
+            <md-button @click="goTo(5)">
+              Register
+            </md-button>
+          </template>
+
 
         </div>
       </md-app-toolbar>

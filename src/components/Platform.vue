@@ -48,12 +48,7 @@
                 <span>Remove from favorites!</span>
             </md-snackbar>
         </div>
-        <div id="load">
-            <md-button
-                    class="md-accent md-raised md-large-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100"
-                    @click="loadMore()"
-            >Load more</md-button>
-
+        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
         </div>
     </div>
 </template>
@@ -65,11 +60,11 @@
     export default {
         data: function() {
             return {
-                games: null,
+                games: [],
                 showSnackbar: false,
                 showSnackbarTrue: false,
                 showSnackbarFalse: false,
-                page:1
+                page:0
             };
         },
         computed: {
@@ -79,19 +74,8 @@
             })
         },
         created: function() {
-
-            const axios = require("axios");
-            // console.log("response:");
-            let url = "https://api.rawg.io/api/games?platforms=".concat(this.$route.params.id);
-            axios.get(url).then((response)=>{
-                this.games = response.data.results;
-                console.log(response);
-
-            })
-                .catch((error)=>{
-                    console.log(error)
-                })
-
+            this.loadMore();
+            this.$forceUpdate();
         },
         methods: {
 
@@ -102,12 +86,13 @@
                 this.$router.push({ name: 'game', params: { id } })
             },
             loadMore() {
-                this.loading = true;
+                this.busy = true;
                 this.page += 1;
                 const axios = require("axios");
                 let url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&platforms=").concat(this.$route.params.id);
                 axios.get(url).then((response)=>{
                     this.games = this.games.concat(response.data.results);
+                    this.busy = false;
                     //console.log(response)
                 })
                     .catch((error)=>{

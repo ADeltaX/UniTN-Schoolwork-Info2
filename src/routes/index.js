@@ -31,7 +31,7 @@ const router = new Router({
             component: Register
         },
         {
-            path: '/Home',
+            path: '/',
             name: 'home',
             component: Home
         },

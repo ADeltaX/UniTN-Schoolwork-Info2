@@ -18,8 +18,8 @@
                               <span>
                                 <md-button
                                         class="md-icon-button"
-                                        @click.stop="changeFavorite(game),showSnackbarTrue=true, showSnackbarFalse=true">
-                                  <md-icon v-if="user.loggedIn">{{(game.user_game) ? 'favorite' : 'favorite_border'}}</md-icon>
+                                        @click.stop="foes.addFavs(game.id,user.data.email),showSnackbarTrue=true, showSnackbarFalse=true">
+                                  <md-icon v-if="user.loggedIn">{{(foes.checkFavs(game.id,user.data.email)) ? 'favorite' : 'favorite_border'}}</md-icon>
                                 </md-button>
                               </span>
                         </md-card-actions>
@@ -48,6 +48,7 @@
 </template>
 <script>
     import { mapGetters } from "vuex";
+    import foes from "@/foes";
     export default {
         computed: {
             // mappa `this.user` a `this.$store.getters.user`
@@ -61,7 +62,8 @@
                 showSnackbarTrue: false,
                 showSnackbarFalse: false,
                 page:0,
-                busy:false
+                busy:false,
+                foes
             };
         },
         created: function() {

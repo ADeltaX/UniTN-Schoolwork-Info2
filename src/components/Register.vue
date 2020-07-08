@@ -62,19 +62,35 @@
         methods: {
             submit() {
                 let router = this.$router;
+                let db = firebase.firestore();
                 firebase
                     .auth()
                     .createUserWithEmailAndPassword(this.form.email, this.form.password)
                     .then(data => {
                         data.user
                             .updateProfile({
-                                displayName: this.form.name
+                                displayName: this.form.name,
+                                email: this.form.email
                             })
                             .then(() => {router.replace("/");});
                     })
                     .catch(err => {
                         this.error = err.message;
                     });
+                // lo aggiungiamo alla collection utenti, così da poter salvare lo username
+
+                //TODO;password in chiaro?
+                db.collection("users").doc(this.form.email).set({
+                    username: this.form.name,
+                    password: this.form.password,
+                })
+                    .then(function() {
+                        console.log("Utente aggiunto con successo");
+                    })
+                    .catch(function(error) {
+                        console.error("Error writing document: ", error);
+                    });
+
             }
         }
     };

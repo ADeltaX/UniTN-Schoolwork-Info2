@@ -61,6 +61,7 @@
         //TODO;controllare perché non va più pd2
         methods: {
             submit() {
+                let router = this.$router;
                 firebase
                     .auth()
                     .createUserWithEmailAndPassword(this.form.email, this.form.password)
@@ -69,7 +70,7 @@
                             .updateProfile({
                                 displayName: this.form.name
                             })
-                            .then(() => {});
+                            .then(() => {router.replace("/");});
                     })
                     .catch(err => {
                         this.error = err.message;

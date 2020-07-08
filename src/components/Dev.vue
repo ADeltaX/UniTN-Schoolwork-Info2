@@ -48,12 +48,7 @@
                 <span>Remove from favorites!</span>
             </md-snackbar>
         </div>
-        <div id="load">
-            <md-button
-                    class="md-accent md-raised md-large-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100"
-                    @click="loadMore()"
-            >Load more</md-button>
-
+        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
         </div>
     </div>
 </template>
@@ -65,11 +60,11 @@
     export default {
         data: function() {
             return {
-                dev: null,
+                dev: [],
                 showSnackbar: false,
                 showSnackbarTrue: false,
                 showSnackbarFalse: false,
-                page:1
+                page:0
             };
         },
         computed: {
@@ -79,19 +74,8 @@
             })
         },
         created: function() {
-
-            const axios = require("axios");
-            // console.log("response:");
-            let url = "https://api.rawg.io/api/games?developers=".concat(this.$route.params.id);
-            axios.get(url).then((response)=>{
-                this.dev = response.data.results;
-                console.log(response);
-
-            })
-                .catch((error)=>{
-                    console.log(error)
-                })
-
+            this.loadMore();
+            this.$forceUpdate();
         },
         methods: {
 

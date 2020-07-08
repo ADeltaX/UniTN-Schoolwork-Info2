@@ -1,5 +1,5 @@
 <template>
-    <div class="md-layout" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10">
+    <div class="md-layout">
         <md-card class="md-layout-item" >
             <md-card-header>
                 <md-card-header-text>
@@ -61,12 +61,13 @@
 
                     <md-table-row>
                         <md-table-cell>
-                            <md-card-media md-big>
-                                <video width="1920" height="1080" autoplay>
+                            <md-card-media md-big >
+                                <video width="1920" height="1080" autoplay v-if="game.clip != null">
                                     <source :src="game.clip.clip" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
-                                <!--TODO;controllare se il video è null -->
+                                <img v-else :src="game.background_image" >
+
 
                             </md-card-media>
                         </md-table-cell>
@@ -85,6 +86,7 @@
                 <br>
 
             </md-card-content>
+            <!-- TODO;fixare il goBack -->
             <md-button class="md-icon-button" @click="goBack()">
                 <md-icon>fast_rewind</md-icon>
             </md-button>
@@ -115,11 +117,13 @@
         },
         created: function() {
             const axios = require("axios");
-            // console.log("response:");
+
             let url = "https://api.rawg.io/api/games/".concat(this.$route.params.id);
+            console.log(url);
             axios.get(url).then((response)=>{
                 this.game = response.data;
                 console.log(response);
+
 
             })
                 .catch((error)=>{

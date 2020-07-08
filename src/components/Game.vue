@@ -1,5 +1,5 @@
 <template>
-    <div class="md-layout">
+    <div class="md-layout" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10">
         <md-card class="md-layout-item" >
             <md-card-header>
                 <md-card-header-text>
@@ -103,7 +103,8 @@
                 game: null,
                 showSnackbar: false,
                 showSnackbarTrue: false,
-                showSnackbarFalse: false
+                showSnackbarFalse: false,
+
             };
         },
         computed: {

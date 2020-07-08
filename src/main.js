@@ -12,6 +12,9 @@ import axios from 'axios'
 
 Vue.use(VueMaterial)
 
+let infiniteScroll =  require('vue-infinite-scroll');
+Vue.use(infiniteScroll)
+
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
@@ -28,11 +31,14 @@ const configOptions = {
 };
 
 
+
 firebase.initializeApp(configOptions);
 
 firebase.auth().onAuthStateChanged(user => {
   store.dispatch("fetchUser", user);
 });
+
+
 
 new Vue({
   router,

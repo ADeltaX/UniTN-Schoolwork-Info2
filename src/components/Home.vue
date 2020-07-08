@@ -1,5 +1,5 @@
 <template>
-    <div class="md-layout md-gutter">
+    <div class="md-layout md-gutter" >
         <div
                 class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                 v-for="game in games"
@@ -48,18 +48,7 @@
                 <span>Remove from favorites!</span>
             </md-snackbar>
         </div>
-        <div id="load" onscroll="loadMore">
-          <!--  <md-button
-                    class="md-accent md-raised md-large-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100"
-                    @click="loadMore()"
-            >Load more</md-button> -->
-            <md-progress-spinner
-                    v-if="loading"
-                    md-mode="indeterminate"
-                    class="md-accent"
-                    :md-diameter="30"
-                    :md-stroke="3"
-            ></md-progress-spinner>
+        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
         </div>
     </div>
 </template>
@@ -75,23 +64,14 @@
         data: function() {
             return {
                 games: [],
-                //offset: 0,
-                loading: false,
                 showSnackbarTrue: false,
                 showSnackbarFalse: false,
-                page:1
+                page:0,
+                busy:false
             };
         },
         created: function() {
-            let url="https://api.rawg.io/api/games"
-            const axios = require("axios");
-            axios.get(url).then((response)=>{
-                    this.games = response.data.results;
-                   console.log(response)
-                })
-                .catch((error)=>{
-                    console.log(error)
-                });
+            this.loadMore();
             this.$forceUpdate();
         },
         methods: {
@@ -100,12 +80,15 @@
                 this.$router.push({ name: 'game', params: { id } })
             },
             loadMore() {
-                this.loading = true;
+                //console.log("Adding more data results");
+                this.busy = true;
+
                 this.page += 1;
                 const axios = require("axios");
                 let url="https://api.rawg.io/api/games?page=".concat(this.page);
                 axios.get(url).then((response)=>{
                     this.games = this.games.concat(response.data.results);
+                    this.busy = false;
                     //console.log(response)
                 })
                     .catch((error)=>{
@@ -136,7 +119,7 @@
 
     .md-card {
         width: 450px;
-        height: 250px;
+        height: auto;
         margin: 4px;
         display: inline-block;
         vertical-align: top;

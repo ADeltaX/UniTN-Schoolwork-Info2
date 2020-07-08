@@ -23,19 +23,8 @@
                 </md-card-media-cover>
             </md-card>
         </div>
-        <div id="load">
-            <md-button
-                    class="md-accent md-raised md-large-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100"
-                    @click="loadMore()"
-            >Load more</md-button>
-            <md-progress-spinner
-                    v-if="loading"
-                    md-mode="indeterminate"
-                    class="md-accent"
-                    :md-diameter="30"
-                    :md-stroke="3"
-            ></md-progress-spinner>
-        </div>
+        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
+                </div>
     </div>
 </template>
 <script>
@@ -58,17 +47,9 @@
             };
         },
         created: function() {
-            let url="https://api.rawg.io/api/developers";
-            const axios = require("axios");
-            axios.get(url).then((response)=>{
-                    this.devs = response.data.results;
-                    console.log(response)
-                })
-                .catch((error)=>{
-                    console.log(error)
-                });
-            this.$forceUpdate();
-        },
+                    this.loadMore();
+                    this.$forceUpdate();
+                },
         methods: {
 
             getGame(id) {
@@ -108,4 +89,11 @@
         width: 230px;
         max-width: calc(100vw - 125px);
     }
+    .md-card {
+            width: 450px;
+            height: 250px;
+            margin: 4px;
+            display: inline-block;
+            vertical-align: top;
+        }
 </style>

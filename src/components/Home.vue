@@ -1,5 +1,5 @@
 <template>
-    <div class="md-layout md-gutter" >
+    <div class="md-layout md-gutter" style="margin-bottom: 56px">
         <div
                 class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                 v-for="game in games"
@@ -12,7 +12,7 @@
                         <div class="container" :style='{ backgroundImage: "url(" + game.short_screenshots[0].image + ")", }'></div>
                     </md-card-media>
 
-                    <md-card-area style="backdrop-filter: blur(32px);">
+                    <md-card-area>
                         <md-card-header>
                             <span class="md-title">{{game.name}}</span>
                         </md-card-header>
@@ -111,26 +111,27 @@
         border: 1px solid rgba(#000, .12);
     }
 
-    // Demo purposes only
-    .md-drawer {
-        width: 230px;
-        max-width: calc(100vw - 125px);
-    }
-
     .md-card {
         width: 450px;
-        height: 250px;
-        margin: 24px;
+        height: 300px;
+        margin: 16px;
         display: inline-block;
         vertical-align: top;
+        border-radius: 8px;
     }
 
     .container {
         width: 450px;
-        height: 250px;
+        height: 300px;
         background-size: cover;
         background-repeat: no-repeat;
         background-position: 50% 50%;
+        border-radius: 8px;
+    }
+
+    .md-card-area {
+        backdrop-filter: blur(32px);
+        border-radius: 0 0 8px 8px;
     }
 
 </style>

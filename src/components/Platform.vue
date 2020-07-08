@@ -1,5 +1,5 @@
 <template>
-    <div class="md-layout md-gutter">
+    <div class="md-layout md-gutter" style="margin-bottom: 56px">
         <div
                 class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                 v-for="game in games"
@@ -9,25 +9,25 @@
             <md-card md-with-hover>
                 <md-card-media-cover md-solid>
                     <md-card-media md-big>
-                        <img :src="game.background_image">
+                        <div class="container" :style='{ backgroundImage: "url(" + game.short_screenshots[0].image + ")", }'></div>
                     </md-card-media>
 
                     <md-card-area>
                         <md-card-header>
                             <span class="md-title">{{game.name}}</span>
                         </md-card-header>
-
-                        <md-card-actions>
-              <span>
-                <md-button
-                        class="md-icon-button"
-                        @click.stop="changeFavorite(game),showSnackbarTrue=true, showSnackbarFalse=true"
-                >
-                  <md-icon v-if="user.loggedIn">{{(game.user_game) ? 'favorite' : 'favorite_border'}}</md-icon>
-                </md-button>
-              </span>
+                        <md-card-actions v-if="user.loggedIn">
+                              <span>
+                                <md-button
+                                        class="md-icon-button"
+                                        @click.stop="changeFavorite(game),showSnackbarTrue=true, showSnackbarFalse=true"
+                                >
+                                  <md-icon v-if="user.loggedIn">{{(game.user_game) ? 'favorite' : 'favorite_border'}}</md-icon>
+                                </md-button>
+                              </span>
                         </md-card-actions>
                     </md-card-area>
+
                 </md-card-media-cover>
             </md-card>
 
@@ -107,3 +107,34 @@
         }
     };
 </script>
+
+<style lang="scss" scoped>
+    .md-app {
+        max-height: 250px;
+        border: 1px solid rgba(#000, .12);
+    }
+
+    .md-card {
+        width: 450px;
+        height: 300px;
+        margin: 16px;
+        display: inline-block;
+        vertical-align: top;
+        border-radius: 8px;
+    }
+
+    .container {
+        width: 450px;
+        height: 300px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        border-radius: 8px;
+    }
+
+    .md-card-area {
+        backdrop-filter: blur(32px);
+        border-radius: 0 0 8px 8px;
+    }
+
+</style>

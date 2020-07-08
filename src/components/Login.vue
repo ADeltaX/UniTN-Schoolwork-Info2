@@ -69,14 +69,14 @@
                 firebase
                     .auth()
                     .signInWithEmailAndPassword(this.form.email, this.form.password)
-                    .then(data)
+                    .then(function(){this.$router.replace({name: "home"});})
                     .catch(err => {
                         this.error = err.message;
                     });
 
-                function data() {
+                /*function data() {
                     this.$router.push({name: "home"});
-                }
+                }*/
             }
 
         }

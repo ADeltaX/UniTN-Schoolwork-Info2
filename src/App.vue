@@ -63,6 +63,8 @@
   import firebase from "firebase";
   import { mapGetters } from "vuex";
 
+
+
   export default
   {
     computed: {

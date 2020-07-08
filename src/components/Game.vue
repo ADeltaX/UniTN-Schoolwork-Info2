@@ -94,40 +94,47 @@
                         Scrivi una recensione
                     </span>
             </md-card-header>
-            <md-card-content>
+            <md-card-content v-if="user.loggedIn">
                 <template>
                     <form>
                         <md-field>
-                            <label>Counter</label>
-                            <md-input v-model="regular" md-counter="30"></md-input>
+                            <label>Title</label>
+                            <md-input v-model="review.title" md-counter="30"></md-input>
                         </md-field>
 
                         <md-field>
-                            <label>Max Length</label>
-                            <md-input v-model="maxLength" maxlength="30"></md-input>
-                        </md-field>
-
-                        <md-field :md-counter="false">
-                            <label>Maxlength with disabled counter</label>
-                            <md-input v-model="disabled" maxlength="10"></md-input>
+                            <label>Score</label>
+                            <md-input v-model="review.score" type="number" max="100" min="1"></md-input>
                         </md-field>
 
                         <md-field>
-                            <label>Autogrow</label>
-                            <md-textarea v-model="autogrow" md-autogrow md-counter="200"></md-textarea>
-                        </md-field>
-
-                        <md-field>
-                            <label>Textarea</label>
-                            <md-textarea v-model="textarea" md-counter="80"></md-textarea>
+                            <label>Review</label>
+                            <md-textarea v-model="review.text" md-counter="500"></md-textarea>
                         </md-field>
 
                         <md-button class="md-raised" type="reset">RESET</md-button>
+                        <md-button class="md-raised" @click="update(user.data.email,game.id)" v-if="rexists">UPDATE</md-button>
+                        <md-button class="md-raised" @click="submit(user.data.email,game.id)" v-else>SUBMIT</md-button>
                     </form>
                 </template>
             </md-card-content>
 
         </md-card>
+        <md-card class="md-layout-item" v-for="rev in reviews"
+                 :key="rev.id">
+            <md-card-header>
+                <span class="md-title">
+                        {{rev.title}}
+                    </span>
+            </md-card-header>
+            <md-card-content v-if="user.loggedIn">
+                <md-card-content>
+                    {{rev.text}}
+                </md-card-content>
+            </md-card-content>
+
+        </md-card>
+        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" ></div>
 
     </div>
 </template>
@@ -137,6 +144,7 @@
 <script>
 
     import {mapGetters} from "vuex";
+    import firebase from "firebase";
 
     export default {
         data: function() {
@@ -145,6 +153,15 @@
                 showSnackbar: false,
                 showSnackbarTrue: false,
                 showSnackbarFalse: false,
+                review:{
+                    title:"",
+                    score:0,
+                    text:""
+                },
+                rexists:false, //se la review dell'utente esiste o meno
+                reviews:[],
+                busy:false,
+                page:0
 
             };
         },
@@ -152,7 +169,8 @@
             // mappa `this.user` a `this.$store.getters.user`
             ...mapGetters({
                 user: "user"
-            })
+            }),
+
         },
         created: function() {
             const axios = require("axios");
@@ -161,19 +179,133 @@
             console.log(url);
             axios.get(url).then((response)=>{
                 this.game = response.data;
-                console.log(response);
+                //console.log(response);
 
 
             })
                 .catch((error)=>{
                     console.log(error)
-                })
+                });
+            this.$forceUpdate();
+            let db = firebase.firestore();
+            let self=this;
+            let id = this.user.data.email.concat("-").concat(this.$route.params.id)
+            let doc = db.collection("reviews").doc(id);
+           // console.log("this:");
+            //console.log(this);
+            doc.get().then(function(doc) {
+                if (doc.exists) {
+                    console.log("review already exists")
+
+                    self.rexists=true;
+                } else {
+                    console.log("review does not exists")
+                    self.rexists=false;
+                }
+            }).catch(function(error) {
+                console.log("Error getting document:", error);
+            });
+            this.loadMore();
+            this.$forceUpdate();
+           //this.checkReview(this.user.data.email,this.$route.params.id);
         },
         methods: {
 
             goBack: function() {
                 this.$router.back();
+            },
+            submit(userId,gameId){
+                let db = firebase.firestore();
+                let id = userId.concat("-").concat(gameId)
+                db.collection("reviews").doc(id).set({
+                    "user-id": userId,
+                    "game-id": gameId,
+                    title:this.review.title,
+                    rating:this.review.score,
+                    text:this.review.text,
+                    upvotes:0,
+                    downvotes:0
+
+                })
+                    .then(function() {
+                        console.log("Review aggiunta con successo");
+                        this.$forceUpdate();
+                    })
+                    .catch(function(error) {
+                        console.error("Error writing document(review): ", error);
+                    });
+            },
+           /*- checkReview(userId,gameId){
+                let db = firebase.firestore();
+                let id = userId.concat("-").concat(gameId)
+                let doc = db.collection("reviews").doc(id);
+
+                doc.get().then(function(doc) {
+                    if (doc.exists) {
+                        console.log("review already exists")
+                        this.rexists=true;
+                    } else {
+                        console.log("review does not exists")
+                        this.rexists=false;
+                    }
+                }).catch(function(error) {
+                    console.log("Error getting document:", error);
+                });
+
+            },*/
+            update(userId,gameId)
+            {
+                let db = firebase.firestore();
+                let id = userId.concat("-").concat(gameId);
+                let doc = db.collection("reviews").doc(id);
+
+
+                return doc.update({
+                    title:this.review.title,
+                    rating:this.review.score,
+                    text:this.review.text
+                })
+                    .then(function() {
+                        console.log("Review successfully updated!");
+                    })
+                    .catch(function(error) {
+
+                        console.error("Error updating review: ", error);
+                    });
+            },
+            loadMore() {
+                //console.log("Adding more data results");
+                this.busy = true;
+                let db = firebase.firestore();
+                let self=this;
+
+
+                db.collection("reviews").where("game-id", "==", self.$route.params.id).limit(10).orderBy("upvotes").startAt(self.page).get().then(function(doc) {
+                    console.log(doc);
+                    if (!doc.empty) {
+                       self.reviews = doc.docs.map(doc => doc.data());
+                       self.page +=10;
+                       self.busy = false;
+                       console.log(self.reviews)
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log("No reviews");
+                    }
+                }).catch(function(error) {
+                    console.log("Error getting document:", error);
+                });
+
+
             }
+
         }
     };
 </script>
+<style lang="scss" scoped>
+    .md-card {
+        width: 320px;
+        margin: 4px;
+        display: inline-block;
+        vertical-align: top;
+    }
+</style>

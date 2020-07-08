@@ -63,22 +63,20 @@
             };
         },
 
-        //TODO;controllare perché non va più, pd
         methods: {
             submit() {
+                let router = this.$router;
+
                 firebase
                     .auth()
                     .signInWithEmailAndPassword(this.form.email, this.form.password)
-                    .then(function(){this.$router.replace({name: "home"});})
+                    .then(function() {
+                        router.replace("/");
+                    })
                     .catch(err => {
                         this.error = err.message;
                     });
-
-                /*function data() {
-                    this.$router.push({name: "home"});
-                }*/
             }
-
         }
     };
 </script>

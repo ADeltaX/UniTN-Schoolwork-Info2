@@ -3,11 +3,10 @@
         <md-card class="md-layout-item" >
             <md-card-header>
                 <md-card-header-text>
-          <span class="md-title">
-            {{game.name}}
-          </span>
+                    <span class="md-title">
+                        {{game.name}}
+                    </span>
                 </md-card-header-text>
-
             </md-card-header>
             <md-card-content>
                 <md-table>
@@ -23,10 +22,10 @@
                         </md-table-cell>
                         <md-table-cell>
                             <ul>
-                                <li
-                                        v-for="devs in game.developers"
-                                        :key="devs.id"
-                                >{{devs.name}}</li>
+                                <li v-for="devs in game.developers"
+                                    :key="devs.id">
+                                    {{devs.name}}
+                                </li>
                             </ul>
                         </md-table-cell>
                     </md-table-row>
@@ -36,10 +35,10 @@
                         </md-table-cell>
                         <md-table-cell>
                             <ul>
-                                <li
-                                        v-for="gen in game.genres"
-                                        :key="gen.id"
-                                >{{gen.name}}</li>
+                                <li v-for="gen in game.genres"
+                                    :key="gen.id">
+                                    {{gen.name}}
+                                </li>
                             </ul>
                         </md-table-cell>
                     </md-table-row>
@@ -49,16 +48,16 @@
                         </md-table-cell>
                         <md-table-cell>
                             <ul>
-                                <li
-                                        v-for="plat in game.platforms"
-                                        :key="plat.id"
-                                >{{plat.platform.name}}<pre></pre><strong>Release date</strong>: {{plat.released_at}}
-
+                                <li v-for="plat in game.platforms"
+                                    :key="plat.id">
+                                    {{plat.platform.name}}
+                                    <pre></pre>
+                                    <strong>Release date</strong>:
+                                    {{plat.released_at}}
                                 </li>
                             </ul>
                         </md-table-cell>
                     </md-table-row>
-
                     <md-table-row>
                         <md-table-cell>
                             <md-card-media md-big >
@@ -67,17 +66,15 @@
                                     Your browser does not support the video tag.
                                 </video>
                                 <img v-else :src="game.background_image" >
-
-
                             </md-card-media>
                         </md-table-cell>
                         <md-table-cell>
                             <a>{{game.website}}</a>
                             <ul>
-                                <li
-                                        v-for="st in game.stores"
-                                        :key="st.id"
-                                >{{st.store.name}}:{{st.url}}</li>
+                                <li v-for="st in game.stores"
+                                    :key="st.id">
+                                    {{st.store.name}}:{{st.url}}
+                                </li>
                             </ul>
 
                         </md-table-cell>

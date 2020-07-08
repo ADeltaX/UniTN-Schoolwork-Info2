@@ -4,27 +4,23 @@
                 class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                 v-for="game in platforms"
                 :key="game.id"
-                @click="getGame(game.id)"
-        >
+                @click="getGame(game.id)">
             <md-card md-with-hover>
                 <md-card-media-cover md-solid>
                     <md-card-media md-big>
                         <div class="container" :style='{ backgroundImage: "url(" + game.image_background + ")", }'></div>
                     </md-card-media>
-
                     <md-card-area>
                         <md-card-header>
                             <span class="md-title">{{game.name}}</span>
                         </md-card-header>
-
                         <md-card-actions>
                         </md-card-actions>
                     </md-card-area>
                 </md-card-media-cover>
             </md-card>
         </div>
-        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10" >
-        </div>
+        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10"></div>
     </div>
 </template>
 <script>

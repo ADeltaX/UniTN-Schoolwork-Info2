@@ -11,10 +11,10 @@
             Logout
           </md-button>
           <template v-else>
-            <md-button @click="goTo(4)" >
+            <md-button @click="goTo('login')" >
               Login
             </md-button>
-            <md-button @click="goTo(5)">
+            <md-button @click="goTo('register')">
               Register
             </md-button>
           </template>
@@ -30,22 +30,22 @@
         <md-list>
           <md-list-item>
             <md-icon>move_to_inbox</md-icon>
-            <span class="md-list-item-text" @click="goTo(0)">Home</span>
+            <span class="md-list-item-text" @click="goTo('home')">Home</span>
           </md-list-item>
 
           <md-list-item>
             <md-icon>send</md-icon>
-            <span class="md-list-item-text" @click="goTo(1)">Platforms</span>
+            <span class="md-list-item-text" @click="goTo('platforms')">Platforms</span>
           </md-list-item>
 
           <md-list-item>
             <md-icon>delete</md-icon>
-            <span class="md-list-item-text" @click="goTo(2)">Developers</span>
+            <span class="md-list-item-text" @click="goTo('devs')">Developers</span>
           </md-list-item>
 
           <md-list-item>
             <md-icon>error</md-icon>
-            <span class="md-list-item-text" @click="goTo(3)">Publishers</span>
+            <span class="md-list-item-text" @click="goTo('pubs')">Publishers</span>
           </md-list-item>
         </md-list>
       </md-app-drawer>
@@ -90,41 +90,9 @@
       },
       goTo(x)
       {
-          switch(x)
-          {
-               case 0:
-                   this.$router.replace({
-                     name: "home"
-                    });
-                 break;
-
-                case 1:
-                   this.$router.replace({
-                     name: "platforms"
-                    });
-                break;
-
-                case 2:
-                  this.$router.replace({
-                     name: "devs"
-                  });
-                break;
-                case 3:
-                  this.$router.replace({
-                     name: "pubs"
-                   });
-                break;
-                case 4:
-                  this.$router.replace({
-                    name: "login"
-                  });
-                  break;
-                case 5:
-                  this.$router.replace({
-                    name: "register"
-                  });
-                  break;
-          }
+        this.$router.replace({
+          name: x
+        });
       }
 
     }

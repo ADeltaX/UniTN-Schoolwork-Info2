@@ -4,14 +4,12 @@
                 class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                 v-for="game in games"
                 :key="game.id"
-                @click="getGame(game.id)"
-        >
+                @click="getGame(game.id)">
             <md-card md-with-hover>
                 <md-card-media-cover md-solid>
                     <md-card-media md-big>
                         <div class="container" :style='{ backgroundImage: "url(" + game.short_screenshots[0].image + ")", }'></div>
                     </md-card-media>
-
                     <md-card-area>
                         <md-card-header>
                             <span class="md-title">{{game.name}}</span>
@@ -20,14 +18,12 @@
                               <span>
                                 <md-button
                                         class="md-icon-button"
-                                        @click.stop="changeFavorite(game),showSnackbarTrue=true, showSnackbarFalse=true"
-                                >
+                                        @click.stop="changeFavorite(game),showSnackbarTrue=true, showSnackbarFalse=true">
                                   <md-icon v-if="user.loggedIn">{{(game.user_game) ? 'favorite' : 'favorite_border'}}</md-icon>
                                 </md-button>
                               </span>
                         </md-card-actions>
                     </md-card-area>
-
                 </md-card-media-cover>
             </md-card>
 
@@ -35,21 +31,18 @@
                     md-position="center"
                     :md-duration="1000"
                     :md-active.sync="showSnackbarTrue"
-                    v-if="game.user_game == true"
-            >
+                    v-if="game.user_game == true">
                 <span>Inserted in favorites!</span>
             </md-snackbar>
             <md-snackbar
                     md-position="center"
                     :md-duration="1000"
                     :md-active.sync="showSnackbarFalse"
-                    v-if="game.user_game == true"
-            >
+                    v-if="game.user_game == true">
                 <span>Remove from favorites!</span>
             </md-snackbar>
         </div>
-        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
-        </div>
+        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10"></div>
     </div>
 </template>
 

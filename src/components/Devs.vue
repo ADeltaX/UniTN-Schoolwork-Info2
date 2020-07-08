@@ -4,27 +4,22 @@
                 class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                 v-for="game in devs"
                 :key="game.id"
-                @click="getGame(game.id)"
-        >
+                @click="getGame(game.id)">
             <md-card md-with-hover>
                 <md-card-media-cover md-solid>
                     <md-card-media md-big>
-                        <img :src="game.image_background">
+                        <div class="container" :style='{ backgroundImage: "url(" + game.image_background + ")", }'></div>
                     </md-card-media>
-
                     <md-card-area>
                         <md-card-header>
                             <span class="md-title">{{game.name}}</span>
                         </md-card-header>
-
-                        <md-card-actions>
-                        </md-card-actions>
+                        <md-card-actions></md-card-actions>
                     </md-card-area>
                 </md-card-media-cover>
             </md-card>
         </div>
-        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
-                </div>
+        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10"></div>
     </div>
 </template>
 <script>
@@ -80,20 +75,31 @@
 
 <style lang="scss" scoped>
     .md-app {
-        max-height: 400px;
+        max-height: 250px;
         border: 1px solid rgba(#000, .12);
     }
 
-    // Demo purposes only
-    .md-drawer {
-        width: 230px;
-        max-width: calc(100vw - 125px);
-    }
     .md-card {
-            width: 450px;
-            height: 250px;
-            margin: 4px;
-            display: inline-block;
-            vertical-align: top;
-        }
+        width: 450px;
+        height: 300px;
+        margin: 16px;
+        display: inline-block;
+        vertical-align: top;
+        border-radius: 8px;
+    }
+
+    .container {
+        width: 450px;
+        height: 300px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        border-radius: 8px;
+    }
+
+    .md-card-area {
+        backdrop-filter: blur(32px);
+        border-radius: 0 0 8px 8px;
+    }
+
 </style>

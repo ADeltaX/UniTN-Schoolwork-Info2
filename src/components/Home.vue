@@ -9,15 +9,14 @@
             <md-card md-with-hover>
                 <md-card-media-cover md-solid>
                     <md-card-media md-big>
-                        <img :src="game.short_screenshots[0].image" >
+                        <div class="container" :style='{ backgroundImage: "url(" + game.short_screenshots[0].image + ")", }'></div>
                     </md-card-media>
 
-                    <md-card-area>
+                    <md-card-area style="backdrop-filter: blur(32px);">
                         <md-card-header>
                             <span class="md-title">{{game.name}}</span>
                         </md-card-header>
-
-                        <md-card-actions>
+                        <md-card-actions v-if="user.loggedIn">
                               <span>
                                 <md-button
                                         class="md-icon-button"
@@ -26,8 +25,9 @@
                                   <md-icon v-if="user.loggedIn">{{(game.user_game) ? 'favorite' : 'favorite_border'}}</md-icon>
                                 </md-button>
                               </span>
-                         </md-card-actions>
+                        </md-card-actions>
                     </md-card-area>
+
                 </md-card-media-cover>
             </md-card>
 
@@ -107,7 +107,7 @@
 
 <style lang="scss" scoped>
     .md-app {
-        max-height: 400px;
+        max-height: 250px;
         border: 1px solid rgba(#000, .12);
     }
 
@@ -119,22 +119,18 @@
 
     .md-card {
         width: 450px;
-        height: auto;
-        margin: 4px;
+        height: 250px;
+        margin: 24px;
         display: inline-block;
         vertical-align: top;
     }
-    .img{
-        height: auto;
-        width: auto;
-        max-width: 450px;
-        max-height: 250px;
-       //min-height: 250px;
 
-        //controllare se si può sistemare
+    .container {
+        width: 450px;
+        height: 250px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
     }
-
-
-
 
 </style>

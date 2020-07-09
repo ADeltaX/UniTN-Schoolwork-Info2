@@ -61,7 +61,7 @@
                     <md-table-row>
                         <md-table-cell>
                             <md-card-media md-big >
-                                <video width="1920" height="1080" autoplay v-if="game.clip != null">
+                                <video width="1920" height="1080" autoplay onloadstart="this.volume=0.1" v-if="game.clip != null">
                                     <source :src="game.clip.clip" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>

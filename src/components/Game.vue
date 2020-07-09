@@ -216,7 +216,7 @@
             });
             this.loadMore();
             this.$forceUpdate();
-           //this.checkReview(this.user.data.email,this.$route.params.id);
+
         },
         methods: {
 

@@ -17,36 +17,18 @@
                             <span class="md-title">{{game.name}}</span>
                         </md-card-header>
 
-                        <md-card-actions>
-              <span>
-                <md-button
-                        class="md-icon-button"
-                        @click.stop="changeFavorite(game),showSnackbarTrue=true, showSnackbarFalse=true"
-                >
-                  <md-icon v-if="user.loggedIn">{{(game.user_game) ? 'favorite' : 'favorite_border'}}</md-icon>
-                </md-button>
-              </span>
+                        <md-card-actions v-if="user.loggedIn">
+                              <span>
+                                <md-button
+                                        class="md-icon-button"
+                                        @click.stop="addFavs(game.id,user.data.email,pub.indexOf(game))">
+                                  <md-icon v-if="user.loggedIn">{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
+                                </md-button>
+                              </span>
                         </md-card-actions>
                     </md-card-area>
                 </md-card-media-cover>
             </md-card>
-
-            <md-snackbar
-                    md-position="center"
-                    :md-duration="1000"
-                    :md-active.sync="showSnackbarTrue"
-                    v-if="game.user_game == true"
-            >
-                <span>Inserted in favorites!</span>
-            </md-snackbar>
-            <md-snackbar
-                    md-position="center"
-                    :md-duration="1000"
-                    :md-active.sync="showSnackbarFalse"
-                    v-if="game.user_game == true"
-            >
-                <span>Remove from favorites!</span>
-            </md-snackbar>
         </div>
         <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
     </div>
@@ -56,15 +38,14 @@
 <script>
 
     import {mapGetters} from "vuex";
+    import firebase from "firebase";
 
     export default {
         data: function() {
             return {
                 pub: [],
-                showSnackbar: false,
-                showSnackbarTrue: false,
-                showSnackbarFalse: false,
-                page:0
+                page:0,
+                busy:false
             };
         },
         computed: {
@@ -85,6 +66,49 @@
             getGame(id) {
                 this.$router.push({ name: 'game', params: { id } })
             },
+            checkFavs(gameId, userId,elementId) {
+                let id = "".concat(userId).concat('-').concat(gameId);
+                let self=this;
+                let db = firebase.firestore();
+                //controlliamo se è già inserito
+                db.collection("favourites").doc(id)
+                    .get().then(function (ris) {
+                    self.pub[elementId].user_game =ris.exists;
+                }).catch(function (error) {
+                    console.error("Error reading document: ", error);
+                });
+            },
+
+            addFavs(gameId, userId,elementId) {
+                let id = "".concat(userId).concat("-").concat(gameId);
+                let db = firebase.firestore();
+                this.checkFavs(gameId, userId,elementId);
+                let self=this;
+
+                if(this.pub[elementId].user_game)
+                {
+                    db.collection("favourites").doc(id).delete().then(function () {
+                        console.log("Document successfully deleted!");
+                        self.pub[elementId].user_game = false;
+
+                    }).catch(function (error) {
+                        console.error("Error removing document: ", error);
+                    });
+                } else {
+                    //altrimenti lo aggiungiamo
+                    db.collection("favourites").doc(id).set({
+                        "user-id": userId,
+                        "game-id": gameId
+                    }).then(function () {
+                        console.log("Document successfully added!");
+                        self.pub[elementId].user_game = true;
+                    }).catch(function (error) {
+                        console.error("Error adding document: ", error);
+                    });
+
+                }
+
+            },
             loadMore() {
                 this.loading = true;
                 this.page += 1;
@@ -92,7 +116,10 @@
                 let url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&publishers=").concat(this.$route.params.id);
                 axios.get(url).then((response)=>{
                     this.pub = this.pub.concat(response.data.results);
-                    //console.log(response)
+                    this.dev.forEach(el => {
+                        this.checkFavs(el.id,this.user.data.email,this.dev.indexOf(el))
+                    });
+                    this.busy = false;
                 })
                     .catch((error)=>{
                         console.log(error)

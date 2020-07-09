@@ -13,12 +13,12 @@
 
     !firebase.apps.length ? firebase.initializeApp(configOptions).firestore() : firebase.app().firestore();
 
-    let db = firebase.firestore();
+   // let db = firebase.firestore();
 
     firebase.auth().onAuthStateChanged(user => {
         store.dispatch("fetchUser", user);
     });
-    export default {
+   /* export default {
 
 
         //TODO;Questa ritorna undefined
@@ -37,7 +37,7 @@
                       console.log(ris);
                      console.log("I'm false");
                     return 1;
-                }-*/
+                }-
             }).catch(function (error) {
                 console.error("Error reading document: ", error);
             });
@@ -76,6 +76,6 @@
 
         }
 
-
+*/
 
 

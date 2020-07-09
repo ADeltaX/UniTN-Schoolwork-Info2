@@ -83,7 +83,7 @@
         max-height: 400px;
         border: 1px solid rgba(#000, .12);
     }
-    
+
     .md-card {
         width: 450px;
         height: 300px;

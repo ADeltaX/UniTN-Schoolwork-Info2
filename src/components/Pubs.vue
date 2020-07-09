@@ -83,17 +83,27 @@
         max-height: 400px;
         border: 1px solid rgba(#000, .12);
     }
-
-    // Demo purposes only
-    .md-drawer {
-        width: 230px;
-        max-width: calc(100vw - 125px);
-    }
+    
     .md-card {
         width: 450px;
-        height: 250px;
-        margin: 4px;
+        height: 300px;
+        margin: 16px;
         display: inline-block;
         vertical-align: top;
+        border-radius: 8px;
+    }
+
+    .container {
+        width: 450px;
+        height: 300px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        border-radius: 8px;
+    }
+
+    .md-card-area {
+        backdrop-filter: blur(32px);
+        border-radius: 0 0 8px 8px;
     }
 </style>

@@ -83,18 +83,21 @@
                 <br>
 
             </md-card-content>
-            <!-- TODO;fixare il goBack -->
-            <md-button class="md-icon-button" @click="goBack()">
-                <md-icon>fast_rewind</md-icon>
-            </md-button>
+            <md-card-actions>
+                <!-- TODO;fixare il goBack -->
+                <md-button class="md-icon-button" @click="goBack()">
+                    <md-icon>fast_rewind</md-icon>
+                </md-button>
+            </md-card-actions>
+
         </md-card>
-        <md-card class="md-layout-item">
+        <md-card v-if="user.loggedIn" class="md-layout-item">
             <md-card-header>
                 <span class="md-title">
                         Scrivi una recensione
                     </span>
             </md-card-header>
-            <md-card-content v-if="user.loggedIn">
+            <md-card-content >
                 <template>
                     <form>
                         <md-field>
@@ -112,15 +115,18 @@
                             <md-textarea v-model="review.text" md-counter="500"></md-textarea>
                         </md-field>
 
-                        <md-button class="md-raised" type="reset">RESET</md-button>
-                        <md-button class="md-raised" @click="update(user.data.email,game.id)" v-if="rexists">UPDATE</md-button>
-                        <md-button class="md-raised" @click="submit(user.data.email,game.id)" v-else>SUBMIT</md-button>
+
                     </form>
                 </template>
             </md-card-content>
+            <md-card-actions>
+                <md-button class="md-raised" type="reset">RESET</md-button>
+                <md-button class="md-raised" @click="update(user.data.email,game.id)" v-if="rexists">UPDATE</md-button>
+                <md-button class="md-raised" @click="submit(user.data.email,game.id)" v-else>SUBMIT</md-button>
+            </md-card-actions>
 
         </md-card>
-        <md-card class="md-layout-item" v-for="rev in reviews"
+        <md-card  v-for="rev in reviews"
                  :key="rev.id">
             <md-card-header>
                 <span class="md-title">
@@ -132,6 +138,9 @@
                     {{rev.text}}
                 </md-card-content>
             </md-card-content>
+            <md-card-actions>
+                {{rev.rating}}
+            </md-card-actions>
 
         </md-card>
         <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" ></div>
@@ -216,7 +225,8 @@
             },
             submit(userId,gameId){
                 let db = firebase.firestore();
-                let id = userId.concat("-").concat(gameId)
+                let id = userId.concat("-").concat(gameId);
+                let self = this;
                 db.collection("reviews").doc(id).set({
                     "user-id": userId,
                     "game-id": gameId,
@@ -229,7 +239,7 @@
                 })
                     .then(function() {
                         console.log("Review aggiunta con successo");
-                        this.$forceUpdate();
+                        self.$forceUpdate();
                     })
                     .catch(function(error) {
                         console.error("Error writing document(review): ", error);

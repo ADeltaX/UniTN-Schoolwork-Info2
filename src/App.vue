@@ -25,27 +25,45 @@
 
 
       <md-app-drawer :md-active.sync="menuVisible">
-        <md-toolbar class="md-transparent" md-elevation="0">Navigation</md-toolbar>
+        <md-toolbar class="md-transparent" md-elevation="0">
+          <template v-if="user.loggedIn">
+            <b> {{user.data.displayName.toUpperCase()}} </b>
+        </template>
+          <template v-else>
+           <!-- <b>Not logged in</b> -->
+          </template>
+        </md-toolbar>
 
         <md-list>
           <md-list-item>
-            <md-icon>move_to_inbox</md-icon>
+            <md-icon>home</md-icon>
             <span class="md-list-item-text" @click="goTo('home')">Home</span>
           </md-list-item>
-
           <md-list-item>
-            <md-icon>send</md-icon>
+            <md-icon>rate_review</md-icon>
+            <span class="md-list-item-text" @click="goTo('reviews')">Reviews</span>
+          </md-list-item>
+          <md-list-item>
+            <md-icon>favorite</md-icon>
+            <span class="md-list-item-text" @click="goTo('favs')">Favourites</span>
+          </md-list-item>
+          <md-list-item>
+            <md-icon>video_label</md-icon>
             <span class="md-list-item-text" @click="goTo('platforms')">Platforms</span>
           </md-list-item>
-
           <md-list-item>
-            <md-icon>delete</md-icon>
+            <md-icon>person</md-icon>
+            <span class="md-list-item-text" @click="goTo('pubs')">Publishers</span>
+          </md-list-item>
+          <md-list-item>
+            <md-icon>group</md-icon>
             <span class="md-list-item-text" @click="goTo('devs')">Developers</span>
           </md-list-item>
 
+
           <md-list-item>
-            <md-icon>error</md-icon>
-            <span class="md-list-item-text" @click="goTo('pubs')">Publishers</span>
+            <md-icon>settings</md-icon>
+            <span class="md-list-item-text" @click="goTo('user')">Settings</span>
           </md-list-item>
         </md-list>
       </md-app-drawer>

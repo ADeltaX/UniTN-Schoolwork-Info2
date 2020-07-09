@@ -12,6 +12,8 @@ import Platforms from '../components/Platforms'
 import Platform from '../components/Platform'
 import Pub from '../components/Pub'
 import Pubs from '../components/Pubs'
+import Reviews from '../components/Reviews'
+import User from '../components/User'
 
 
 Vue.use(Router)
@@ -75,6 +77,17 @@ const router = new Router({
             name: 'pubs',
             component: Pubs
         },
+        {
+            path: '/Reviews',
+            name: 'reviews',
+            component: Reviews
+        },
+        {
+            path: '/Settings',
+            name: 'user',
+            component: User
+        },
+
     ]
 });
 

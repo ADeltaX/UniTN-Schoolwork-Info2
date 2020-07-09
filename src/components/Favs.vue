@@ -14,7 +14,7 @@
             <md-card md-with-hover>
                 <md-card-media-cover md-solid>
                     <md-card-media md-big>
-                        <div class="container" :style='{ backgroundImage: "url(" + game.short_screenshots[0].image + ")", }'></div>
+                        <div class="container" :style='{ backgroundImage: "url(" + game.background_image + ")", }'></div>
                     </md-card-media>
                     <md-card-area>
                         <md-card-header>
@@ -24,29 +24,14 @@
                               <span>
                                 <md-button
                                         class="md-icon-button"
-                                        @click.stop="remFavs(game.id,user.data.email,games.indexOf(game)),showSnackbarTrue=true, showSnackbarFalse=true">
-
+                                        @click.stop="remFavs(game.id,user.data.email,games.indexOf(game))">
+                                    <md-icon>delete</md-icon>
                                 </md-button>
                               </span>
                         </md-card-actions>
                     </md-card-area>
                 </md-card-media-cover>
             </md-card>
-
-            <!--      <md-snackbar
-                          md-position="center"
-                          :md-duration="1000"
-                          :md-active.sync="showSnackbarTrue"
-                          v-if="game.user_game == true">
-                      <span>Inserted in favorites!</span>
-                  </md-snackbar>
-                  <md-snackbar
-                          md-position="center"
-                          :md-duration="1000"
-                          :md-active.sync="showSnackbarFalse"
-                          v-if="game.user_game == true">
-                      <span>Remove from favorites!</span>
-                  </md-snackbar> -->
         </div>
     <!--    <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
         </div>-->
@@ -65,7 +50,8 @@
         },
         data: function() {
             return {
-                games: [],
+                favs: [],
+                games:[],
                 empty:false,
                 page:0,
                 busy:true,
@@ -74,9 +60,9 @@
             };
         },
         created: function() {
+            console.clear();
             this.checkFavs(this.user.data.email);
-            console.log("porcodio")
-            console.log(this.games);
+            console.log(this);
             this.$forceUpdate();
         },
         methods: {
@@ -84,29 +70,35 @@
             getGame(id) {
                 this.$router.push({ name: 'game', params: { id } })
             },
-           /*- loadMore() {
-                //console.log("Adding more data results");
-                this.busy = true;
-
-                this.page += 10;
-                this.checkFavs();
-
-
-            },*/
             checkFavs(userId) {
 
                 this.busy =true;
                 let self=this;
                 let db = firebase.firestore();
-                console.log(userId);
+                //console.log(userId);
                 //controlliamo se è già inserito
                 db.collection("favourites").where("user-id", "==", userId).get().then(function(doc) {
-                    console.log(doc);
+                  //  console.log(doc);
                     if (!doc.empty) {
-                        self.games = doc.docs.map(doc => doc.data());
+                        self.favs = doc.docs.map(doc => doc.data());
                        // self.page +=10;
                         self.busy = false;
-                        console.log(self.games)
+                       // console.log("log self.favs");
+                       // console.log(self.favs);
+                        const axios = require("axios");
+                        self.favs.forEach(el =>{
+                            let url="https://api.rawg.io/api/games/".concat(el["game-id"]);
+                           // console.log("I'm here: url="+url+"\n");
+                            axios.get(url).then((response)=>{
+                               // console.log(self);
+                                self.games = self.games.concat(response.data);
+                                //console.log("Game added")
+                            })
+                                .catch((error)=>{
+                                    console.log(error)
+                                })
+                        });
+                        self.busy=false;
                     } else {
                         self.empty = true;
                         console.log("No games");
@@ -119,12 +111,13 @@
             remFavs(gameId, userId,elementId) {
                 let id = "".concat(userId).concat("-").concat(gameId);
                 let db = firebase.firestore();
-                this.checkFavs(gameId, userId);
+                //this.checkFavs(gameId, userId);
                 let self=this;
 
                 db.collection("favourites").doc(id).delete().then(function () {
                         console.log("Document successfully deleted!");
                        self.games.splice(elementId,1); // cancella il gioco dall'array
+                    self.favs.splice(elementId,1);
                     self.$forceUpdate();
 
                     }).catch(function (error) {

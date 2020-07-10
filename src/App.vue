@@ -138,7 +138,7 @@
       },
 
       goTo(x) {
-        this.$router.push(x);
+        this.$router.push({path: "/".concat(x)});
         this.$forceUpdate();
       }
     }

@@ -55,16 +55,18 @@
             submit() {
                 let router = this.$router;
                 let db = firebase.firestore();
+                let self=this;
 
                 firebase.auth()
                 .createUserWithEmailAndPassword(this.form.email, this.form.password)
                 .then(data => {
+                    console.log("updating");
                     data.user
                         .updateProfile({
-                            displayName: this.form.name,
-                            email: this.form.email
+                            displayName: self.form.name,
+                            email: self.form.email
                         })
-                        .then(() => {router.replace("/");});
+                        .then(() => {console.log("  form.email: "+self.form.email); console.log("replace");router.replace( {name:"home"});self.$forceUpdate()});
                 })
                 .catch(err => {
                     this.error = err.message;
@@ -75,16 +77,19 @@
                 //Lo aggiungiamo alla collection utenti, così da poter salvare lo username
 
                 //TODO: password in chiaro?
-                db.collection("users").doc(this.form.email).set({
-                    username: this.form.name,
-                    password: this.form.password,
-                })
-                .then(function() {
-                    console.log("Utente aggiunto con successo");
-                })
-                .catch(function(error) {
-                    console.error("Error writing document: ", error);
-                });
+                if(this.error==null) {
+                    db.collection("users").doc(this.form.email).set({
+                        username: this.form.name,
+                        password: this.form.password,
+                    })
+                        .then(function () {
+                            console.log("Utente aggiunto con successo");
+
+                        })
+                        .catch(function (error) {
+                            console.error("Error writing document: ", error);
+                        });
+                }
             }
         }
     };

@@ -68,7 +68,24 @@
                             displayName: self.form.name,
                             email: self.form.email
                         })
-                        .then(() => {console.log("  form.email: "+self.form.email); console.log("replace");router.replace( {name:"home"});self.$forceUpdate()});
+                        .then(() => {
+                           // console.log("  form.email: "+self.form.email); console.log("replace");
+                            //TODO: password in chiaro?
+                            if(self.error==null) {
+                                db.collection("users").doc(self.form.email).set({
+                                    username: self.form.name,
+                                    password: self.form.password,
+                                })
+                                    .then(function () {
+                                        console.log("Utente aggiunto con successo");
+
+                                    })
+                                    .catch(function (error) {
+                                        console.error("Error writing document: ", error);
+                                    });
+                            }
+                            router.replace( {name:"home"});self.$forceUpdate()
+                        });
                 })
                 .catch(err => {
                     this.error = err.message;
@@ -78,20 +95,7 @@
 
                 //Lo aggiungiamo alla collection utenti, così da poter salvare lo username
 
-                //TODO: password in chiaro?
-                if(this.error==null) {
-                    db.collection("users").doc(this.form.email).set({
-                        username: this.form.name,
-                        password: this.form.password,
-                    })
-                        .then(function () {
-                            console.log("Utente aggiunto con successo");
 
-                        })
-                        .catch(function (error) {
-                            console.error("Error writing document: ", error);
-                        });
-                }
             }
         }
     };

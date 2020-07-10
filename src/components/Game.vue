@@ -202,24 +202,26 @@
                     console.log(error)
                 });
             this.$forceUpdate();
-            let db = firebase.firestore();
-            let self=this;
-            let id = this.user.data.email.concat("-").concat(this.$route.params.id)
-            let doc = db.collection("reviews").doc(id);
-           // console.log("this:");
-            //console.log(this);
-            doc.get().then(function(doc) {
-                if (doc.exists) {
-                    console.log("review already exists")
+            if(this.user.loggedIn) {
+                let db = firebase.firestore();
+                let self = this;
+                let id = this.user.data.email.concat("-").concat(this.$route.params.id)
+                let doc = db.collection("reviews").doc(id);
+                // console.log("this:");
+                //console.log(this);
+                doc.get().then(function (doc) {
+                    if (doc.exists) {
+                        console.log("review already exists")
 
-                    self.rexists=true;
-                } else {
-                    console.log("review does not exists")
-                    self.rexists=false;
-                }
-            }).catch(function(error) {
-                console.log("Error getting document:", error);
-            });
+                        self.rexists = true;
+                    } else {
+                        console.log("review does not exists")
+                        self.rexists = false;
+                    }
+                }).catch(function (error) {
+                    console.log("Error getting document:", error);
+                });
+            }
             this.loadMore();
             this.$forceUpdate();
 

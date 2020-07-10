@@ -50,8 +50,6 @@
                 games: [],
                 page:0,
                 busy:false,
-                //foes
-
             };
         },
         created: function() {

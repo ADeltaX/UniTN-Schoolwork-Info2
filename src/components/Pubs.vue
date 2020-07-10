@@ -36,8 +36,6 @@
                 pubs: [],
                 offset: 0,
                 loading: false,
-                showSnackbarTrue: false,
-                showSnackbarFalse: false,
                 page:1
             };
         },

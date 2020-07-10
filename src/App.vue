@@ -119,7 +119,7 @@
     data: () => ({
       menuVisible: false,
       showDialog: false,
-      dataForSearchbox: []
+      //dataForSearchbox: []
     }),
 
     methods:{

@@ -125,7 +125,7 @@
         .signOut()
         .then(() => {
           this.$router.replace({
-            name: "home"
+            path: "/"
           });
         });
       },

@@ -34,8 +34,6 @@ const configOptions = {
 
 !firebase.apps.length ? firebase.initializeApp(configOptions).firestore() : firebase.app().firestore();
 
-// let db = firebase.firestore();
-
 firebase.auth().onAuthStateChanged(user => {
   store.dispatch("fetchUser", user);
 });

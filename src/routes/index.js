@@ -38,17 +38,17 @@ const router = new Router({
             component: Home
         },
         {
-            path: '/Game',
+            path: '/Game/:slug',
             name: 'game',
             component: Game
         },
         {
-            path: '/Dev',
+            path: '/Dev/:slug',
             name: 'dev',
             component: Dev
         },
         {
-            path: '/Devs',
+            path: '/Devs/',
             name: 'devs',
             component: Devs
         },
@@ -63,12 +63,12 @@ const router = new Router({
             component: Platforms
         },
         {
-            path: '/Platform',
+            path: '/Platform/:slug',
             name: 'platform',
             component: Platform
         },
         {
-            path: '/Pub',
+            path: '/Pub/:slug',
             name: 'pub',
             component: Pub
         },

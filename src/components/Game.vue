@@ -133,10 +133,10 @@
                         {{rev.title}}
                     </span>
             </md-card-header>
-            <md-card-content v-if="user.loggedIn">
-                <md-card-content>
+            <md-card-content >
+
                     {{rev.text}}
-                </md-card-content>
+
             </md-card-content>
             <md-card-actions>
                 {{rev.rating}}
@@ -170,7 +170,8 @@
                 rexists:false, //se la review dell'utente esiste o meno
                 reviews:[],
                 busy:false,
-                page:0
+                page:0,
+                gid: this.$route.params.id
 
             };
         },
@@ -183,6 +184,9 @@
         },
         created: function() {
             const axios = require("axios");
+
+            // register, i.e. in a `mounted` hook
+            window.addEventListener('unload', this.onReload);
 
             let url = "https://api.rawg.io/api/games/".concat(this.$route.params.id);
             console.log(url);
@@ -222,6 +226,11 @@
 
             goBack: function() {
                 this.$router.back();
+            },
+            onReload(){
+               let id=this.gid.toString();
+
+                this.$router.push({ name: 'game', params: { id }});
             },
             submit(userId,gameId){
                 let db = firebase.firestore();

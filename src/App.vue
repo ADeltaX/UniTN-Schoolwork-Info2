@@ -31,7 +31,7 @@
       <md-app-drawer :md-active.sync="menuVisible">
         <md-toolbar class="md-transparent" md-permanent="clipped" md-elevation="0">
           <template v-if="user.loggedIn">
-            <div>
+            <div v-if="user.data.displayName!=null">
               <md-avatar class="md-avatar-icon md-primary" style="margin: 8px 8px 8px 0px">{{user.data.displayName.toUpperCase()[0]}}</md-avatar>
               <b> {{user.data.displayName.toUpperCase()}} </b>
             </div>
@@ -136,6 +136,7 @@
 
       goTo(x) {
         this.$router.push(x);
+        this.$forceUpdate();
       }
     }
   };

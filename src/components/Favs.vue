@@ -1,40 +1,55 @@
 <template>
-    <md-empty-state v-if="empty"
-            md-rounded
-            md-icon="favorite"
-            md-label="No favourites yet!"
-            md-description="Dummy text">
-    </md-empty-state>
-    <div class="md-layout md-gutter" v-else-if="!busy"  style="margin-bottom: 56px">
-        <div
+    <div v-bind:class="[(empty || !user.loggedIn) ? 'centered-container' : '']">
+
+        <div v-if="!user.loggedIn">
+            <md-empty-state
+                md-icon="favorite"
+                md-label="Login to see your favourites!"
+                md-description="By logging in, you'll be able to handle your favourites.">
+                <md-button class="md-primary md-raised" @click="goTo('login')">Login</md-button>
+            </md-empty-state>
+        </div>
+
+        <div v-else-if="empty">
+            <md-empty-state
+                    md-rounded
+                    md-icon="favorite"
+                    md-label="No favourites yet!"
+                    md-description="This page feels empty without your favourite games :(">
+            </md-empty-state>
+        </div>
+
+        <div class="md-layout md-gutter" v-else-if="!busy"  style="margin-bottom: 56px">
+            <div
                 class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                 v-for="game in games"
                 :key="game.id"
                 @click="getGame(game.id)">
-            <md-card md-with-hover>
-                <md-card-media-cover md-solid>
-                    <md-card-media md-big>
-                        <div class="container" :style='{ backgroundImage: "url(" + game.background_image + ")", }'></div>
-                    </md-card-media>
-                    <md-card-area>
-                        <md-card-header>
-                            <span class="md-title">{{game.name}}</span>
-                        </md-card-header>
-                        <md-card-actions>
-                              <span>
-                                <md-button
-                                        class="md-icon-button"
-                                        @click.stop="remFavs(game.id,user.data.email,games.indexOf(game))">
-                                    <md-icon>delete</md-icon>
-                                </md-button>
-                              </span>
-                        </md-card-actions>
-                    </md-card-area>
-                </md-card-media-cover>
-            </md-card>
+                <md-card md-with-hover>
+                    <md-card-media-cover md-solid>
+                        <md-card-media md-big>
+                            <div class="container" :style='{ backgroundImage: "url(" + game.background_image + ")", }'></div>
+                        </md-card-media>
+                        <md-card-area>
+                            <md-card-header>
+                                <span class="md-title">{{game.name}}</span>
+                            </md-card-header>
+                            <md-card-actions>
+                                <span>
+                                    <md-button
+                                            class="md-icon-button"
+                                            @click.stop="remFavs(game.id, user.data.email, games.indexOf(game))">
+                                        <md-icon>delete</md-icon>
+                                    </md-button>
+                                </span>
+                            </md-card-actions>
+                        </md-card-area>
+                    </md-card-media-cover>
+                </md-card>
+            </div>
+        <!--    <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
+            </div>-->
         </div>
-    <!--    <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
-        </div>-->
     </div>
 </template>
 <script>
@@ -48,23 +63,24 @@
                 user: "user"
             })
         },
+
         data: function() {
             return {
                 favs: [],
-                games:[],
-                empty:false,
-                page:0,
-                busy:true,
-
-
+                games: [],
+                empty: false,
+                page: 0,
+                busy: true,
             };
         },
+
         created: function() {
             console.clear();
-            this.checkFavs(this.user.data.email);
-            console.log(this);
+            if (this.user.data != null)
+                this.checkFavs(this.user.data.email);
             this.$forceUpdate();
         },
+
         methods: {
 
             getGame(id) {
@@ -115,24 +131,32 @@
                 let self=this;
 
                 db.collection("favourites").doc(id).delete().then(function () {
-                        console.log("Document successfully deleted!");
-                       self.games.splice(elementId,1); // cancella il gioco dall'array
+                    console.log("Document successfully deleted!");
+                    self.games.splice(elementId,1); // cancella il gioco dall'array
                     self.favs.splice(elementId,1);
                     self.$forceUpdate();
-
-                    }).catch(function (error) {
-                        console.error("Error removing document: ", error);
-                    });
-
-
+                }).catch(function (error) {
+                    console.error("Error removing document: ", error);
+                });
+            },
+            
+            goTo(x) {
+                this.$router.push({
+                    name: x
+                });
             }
-
         }
-
     };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+    .centered-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        height: 100% !important;
+    }
     .md-app {
         max-height: 250px;
         border: 1px solid rgba(#000, .12);
@@ -160,6 +184,4 @@
         backdrop-filter: blur(32px);
         border-radius: 0 0 8px 8px;
     }
-
 </style>
-

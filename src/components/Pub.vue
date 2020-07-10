@@ -4,23 +4,19 @@
                 class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                 v-for="game in pub"
                 :key="game.id"
-                @click="getGame(game.id)"
-        >
+                @click="getGame(game.id)">
             <md-card md-with-hover>
                 <md-card-media-cover md-solid>
                     <md-card-media md-big>
-                        <img :src="game.background_image">
+                        <div class="img-container" :style='{ backgroundImage: "url(" + game.background_image + ")", }'></div>
                     </md-card-media>
-
                     <md-card-area>
                         <md-card-header>
                             <span class="md-title">{{game.name}}</span>
                         </md-card-header>
-
                         <md-card-actions v-if="user.loggedIn">
                               <span>
-                                <md-button
-                                        class="md-icon-button"
+                                <md-button class="md-icon-button"
                                         @click.stop="addFavs(game.id,user.data.email,pub.indexOf(game))">
                                   <md-icon v-if="user.loggedIn">{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
                                 </md-button>
@@ -126,10 +122,7 @@
                     });
                 this.loading = false;
                 this.$forceUpdate();
-
-
             }
-
         }
     };
 </script>

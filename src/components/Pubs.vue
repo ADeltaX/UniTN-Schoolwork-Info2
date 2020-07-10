@@ -4,21 +4,16 @@
                 class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                 v-for="game in pubs"
                 :key="game.id"
-                @click="getGame(game.id)"
-        >
+                @click="getGame(game.id)">
             <md-card md-with-hover>
                 <md-card-media-cover md-solid>
                     <md-card-media md-big>
-                        <img :src="game.image_background">
+                        <div class="img-container" :style='{ backgroundImage: "url(" + game.image_background + ")", }'></div>
                     </md-card-media>
-
                     <md-card-area>
                         <md-card-header>
                             <span class="md-title">{{game.name}}</span>
                         </md-card-header>
-
-                        <md-card-actions>
-                        </md-card-actions>
                     </md-card-area>
                 </md-card-media-cover>
             </md-card>
@@ -77,33 +72,3 @@
 
     };
 </script>
-
-<style lang="scss" scoped>
-    .md-app {
-        max-height: 400px;
-        border: 1px solid rgba(#000, .12);
-    }
-
-    .md-card {
-        width: 450px;
-        height: 300px;
-        margin: 16px;
-        display: inline-block;
-        vertical-align: top;
-        border-radius: 8px;
-    }
-
-    .container {
-        width: 450px;
-        height: 300px;
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: 50% 50%;
-        border-radius: 8px;
-    }
-
-    .md-card-area {
-        backdrop-filter: blur(32px);
-        border-radius: 0 0 8px 8px;
-    }
-</style>

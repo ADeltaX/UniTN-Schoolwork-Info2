@@ -1,52 +1,33 @@
 <template>
     <div class="centered-container">
-
-        <md-content class="md-elevation-3">
-
+        <md-content class="md-elevation-4">
             <div class="title">
-                <!--img src="https://vuematerial.io/assets/logo-color.png"-->
-                <div class="md-title">Login</div>
-                <div class="md-body-1"></div>
+                <img src="../assets/GR_Logo_256.png">
+                <div class="md-title">Game Review</div>
+                <div class="md-body-1">Login to save your favorites and to write reviews!</div>
             </div>
-
             <div class="form">
                 <md-field>
                     <label>E-mail</label>
                     <md-input v-model="form.email" autofocus></md-input>
                 </md-field>
-
                 <md-field md-has-password>
                     <label>Password</label>
                     <md-input v-model="form.password" type="password"></md-input>
                 </md-field>
-                <div class="actions md-layout md-alignment-center-space-between">
-                    <!--<a href="/resetpassword">Reset password</a>-->
+                <div class="actions md-layout md-alignment-right">
                     <md-button class="md-raised md-primary" @click="submit">Log in</md-button>
                 </div>
-
             </div>
             <div class="loading-overlay" v-if="loading">
                 <md-progress-spinner md-mode="indeterminate" :md-stroke="2"></md-progress-spinner>
             </div>
-
-
-
-
-
+            <md-snackbar md-position="left" :md-active.sync="showSnackbar">
+                <span>{{error}}</span>
+            </md-snackbar>
         </md-content>
-        <div class="background" />
     </div>
 </template>
-
-
-<style lang="scss" scoped>
-    .md-progress-bar {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-    }
-</style>
 
 <script>
     import firebase from "firebase";
@@ -55,6 +36,7 @@
         data() {
             return {
                 loading:false,
+                showSnackbar: false,
                 form: {
                     email: "",
                     password: ""
@@ -65,29 +47,33 @@
 
         methods: {
             submit() {
+                this.loading = true;
                 let router = this.$router;
 
-                firebase
-                    .auth()
-                    .signInWithEmailAndPassword(this.form.email, this.form.password)
-                    .then(function() {
-                        router.replace("/");
-                    })
-                    .catch(err => {
-                        this.error = err.message;
-                    });
+                firebase.auth()
+                .signInWithEmailAndPassword(this.form.email, this.form.password)
+                .then(function() {
+                    router.replace("/");
+                    this.loading = false;
+                })
+                .catch(err => {
+                    this.error = err.message;
+                    this.showSnackbar = true;
+                    this.loading = false;
+                });
             }
         }
     };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
     .centered-container {
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
-        height: 100vh;
+        height: 100%;
+
         .title {
             text-align: center;
             margin-bottom: 30px;
@@ -96,14 +82,13 @@
                 max-width: 80px;
             }
         }
+
         .actions {
             .md-button {
                 margin: 0;
             }
         }
-        .form {
-            margin-bottom: 60px;
-        }
+
         .md-content {
             z-index: 1;
             padding: 40px;
@@ -111,6 +96,7 @@
             max-width: 400px;
             position: relative;
         }
+
         .loading-overlay {
             z-index: 10;
             top: 0;
@@ -125,4 +111,4 @@
             justify-content: center;
         }
     }
-    </style>
+</style>

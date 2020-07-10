@@ -34,8 +34,10 @@
 
 <script>
     import { mapGetters } from "vuex";
-    //import foes from "@/foes";
-    import firebase from "firebase"
+    import "@firebase/app";
+    import firebase from "@firebase/app";
+    import "@firebase/firestore";
+
     export default {
         computed: {
             // mappa `this.user` a `this.$store.getters.user`

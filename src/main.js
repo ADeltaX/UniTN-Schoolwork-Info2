@@ -20,7 +20,15 @@ Vue.config.productionTip = false
 Vue.prototype.$http = axios
 
 
-import firebase from 'firebase';
+import "@firebase/app";
+import firebase from "@firebase/app";
+import "@firebase/firestore";
+
+//con questi non va
+//import firebase from 'firebase';
+//const firebase = require("firebase");
+// Required for side-effects
+//require("firebase/firestore");
 
 const configOptions = {
   apiKey: "AIzaSyA86bFqzVk8ukOzjf3E61J9YEBzolj2Wb0",
@@ -29,11 +37,13 @@ const configOptions = {
   projectId: "gamereview-bb9af",
   storageBucket: "",
   messagingSenderId: "",
-  appId: ""
+  appId: "1:228925046389:web:e33f2978a7a8757812823c"
 };
 
-!firebase.apps.length ? firebase.initializeApp(configOptions).firestore() : firebase.app().firestore();
-
+console.log(firebase.initializeApp(configOptions))
+!firebase.apps.length ? firebase.initializeApp(configOptions) : firebase.app();
+//firebase.initializeApp(configOptions)
+firebase.firestore()
 firebase.auth().onAuthStateChanged(user => {
   store.dispatch("fetchUser", user);
 });

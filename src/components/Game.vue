@@ -102,17 +102,17 @@
                     <form>
                         <md-field>
                             <label>Title</label>
-                            <md-input v-model="review.title" md-counter="30"></md-input>
+                            <md-input required v-model="review.title" md-counter="30"></md-input>
                         </md-field>
 
                         <md-field>
                             <label>Score</label>
-                            <md-input v-model="review.score" type="number" max="100" min="1"></md-input>
+                            <md-input required value="70" v-model="review.score" type="number" max="100" min="1"></md-input>
                         </md-field>
 
                         <md-field>
                             <label>Review</label>
-                            <md-textarea v-model="review.text" md-counter="500"></md-textarea>
+                            <md-textarea required v-model="review.text" md-counter="500"></md-textarea>
                         </md-field>
 
 
@@ -126,6 +126,9 @@
             </md-card-actions>
 
         </md-card>
+        <md-snackbar md-position="left" :md-active.sync="showSnackbar">
+            <span>{{error}}</span>
+        </md-snackbar>
         <md-card  v-for="rev in reviews"
                  :key="rev.id">
             <md-card-header>
@@ -162,18 +165,17 @@
             return {
                 game: null,
                 showSnackbar: false,
-                showSnackbarTrue: false,
-                showSnackbarFalse: false,
                 review:{
                     title:"",
-                    score:0,
+                    score:60,
                     text:""
                 },
                 rexists:false, //se la review dell'utente esiste o meno
                 reviews:[],
                 busy:false,
                 page:0,
-                gid: this.$route.params.id
+                gid: this.$route.params.id,
+                error:null
 
             };
         },
@@ -240,6 +242,28 @@
                 let db = firebase.firestore();
                 let id = userId.concat("-").concat(gameId);
                 let self = this;
+
+               /* console.error(this.review.title)
+                console.error(this.review.text)*/
+
+                if(this.review.title === ""|| this.review.text === "")
+                {
+                    this.showSnackbar = true;
+                    this.error="Titolo e descrizione sono obbligatori";
+                    console.error("Errore titolo e descrizione")
+
+                    return;
+
+                }
+                if(this.review.score <= 0|| this.review.score > 100)
+                {
+                    this.showSnackbar = true;
+                    this.error="Lo score deve essere compreso tra 0 e 100";
+                    console.error("Errore score")
+                  //  this.score=60;
+                   // this.$forceUpdate();
+                    return;
+                }
                 db.collection("reviews").doc(id).set({
                     "user-id": userId,
                     "game-id": gameId,
@@ -282,7 +306,24 @@
                 let id = userId.concat("-").concat(gameId);
                 let doc = db.collection("reviews").doc(id);
 
+                if(this.review.title === ""|| this.review.text === "")
+                {
+                    this.showSnackbar = true;
+                    this.error="Titolo e descrizione sono obbligatori";
+                    console.error("Errore titolo e descrizione")
 
+                    return;
+
+                }
+                if(this.review.score <= 0|| this.review.score > 100)
+                {
+                    this.showSnackbar = true;
+                    this.error="Lo score deve essere compreso tra 0 e 100";
+                    console.error("Errore score")
+                    //  this.score=60;
+                    // this.$forceUpdate();
+                    return;
+                }
                 return doc.update({
                     title:this.review.title,
                     rating:this.review.score,

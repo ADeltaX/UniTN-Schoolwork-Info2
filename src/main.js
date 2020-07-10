@@ -23,7 +23,9 @@ Vue.prototype.$http = axios
 import "@firebase/app";
 import firebase from "@firebase/app";
 import "@firebase/firestore";
+require('firebase/auth')
 
+//javascript è bello :D
 //con questi non va
 //import firebase from 'firebase';
 //const firebase = require("firebase");

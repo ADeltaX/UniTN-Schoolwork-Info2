@@ -79,6 +79,7 @@
         },
 
         created() {
+            console.clear();
             if (this.user.loggedIn)
                 this.load(this.user.data.email);
             this.$forceUpdate();

@@ -55,6 +55,7 @@
             })
         },
         created: function() {
+            console.clear();
             this.loadMore();
             this.$forceUpdate();
         },

@@ -8,7 +8,7 @@
                 :key="game.id">
                 <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
                     <md-card-media md-big>
-                        <div class="img-container" :style='{ backgroundImage: "url(" + game.short_screenshots[0].image + ")", }'></div>
+                        <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.short_screenshots[0].image) + ")", }'></div>
                     </md-card-media>
                     <md-card-area>
                         <md-card-header>
@@ -19,7 +19,7 @@
                                 <md-button
                                         class="md-icon-button"
                                         @click.stop="addFavs(game.id,user.data.email,games.indexOf(game))">
-                                <md-icon v-if="user.loggedIn">{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
+                                <md-icon>{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
                                 </md-button>
                             </span>
                         </md-card-actions>
@@ -35,7 +35,6 @@
 <script>
 
     import {mapGetters} from "vuex";
-    //import firebase from "firebase";
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
@@ -44,8 +43,9 @@
         data: function() {
             return {
                 games: [],
-                page:0,
-                busy:false
+                page: 0,
+                busy: false,
+                canLoadMore: true
             };
         },
         computed: {
@@ -60,6 +60,13 @@
             this.$forceUpdate();
         },
         methods: {
+            getResizedImage(url, size = 640){
+                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
+                if (url == null) //Capita che il server risponda con null
+                    return null;
+
+                return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
+            },
 
             goBack: function() {
                 this.$router.back();
@@ -71,19 +78,23 @@
 
             loadMore() {
                 this.busy = true;
-                this.page += 1;
+                this.page++;
                 const axios = require("axios");
                 let url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&platforms=").concat(this.$route.params.id);
                 axios.get(url).then((response) => {
                     this.games = this.games.concat(response.data.results);
                     this.games.forEach(el => {
                         this.checkFavs(el.id,this.user.data.email,this.games.indexOf(el))
-                    })
+                    });
+
                     this.busy = false;
-                    //console.log(response)
+
+                    if (response.data.next == null)
+                        this.canLoadMore = false;
                 })
                 .catch((error)=>{
-                    console.log(error)
+                    this.page--;
+                    console.log(error);
                     this.busy = false;
                 });
                 this.$forceUpdate();

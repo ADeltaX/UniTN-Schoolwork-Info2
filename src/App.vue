@@ -31,10 +31,8 @@
       <md-app-drawer :md-active.sync="menuVisible">
         <md-toolbar class="md-transparent" md-permanent="clipped" md-elevation="0">
           <template v-if="user.loggedIn">
-            <div v-if="user.data.displayName!=null">
-              <md-avatar class="md-avatar-icon md-primary" style="margin: 8px 8px 8px 0px">{{user.data.displayName.toUpperCase()[0]}}</md-avatar>
-              <b> {{user.data.displayName.toUpperCase()}} </b>
-            </div>
+              <md-avatar class="md-avatar-icon md-primary" style="margin: 8px 8px 8px 0px">{{user.data.displayName != null ? user.data.displayName.toUpperCase()[0] : ""}}</md-avatar>
+              <b> {{user.data.displayName != null ? user.data.displayName.toUpperCase() : ""}} </b>
           </template>
           <template v-else>
             <div>
@@ -281,5 +279,9 @@
 
   .md-progress-bar {
     margin: -16px;
+  }
+
+  .platform_icon_pc {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PScwIDAgMTYgMTYnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zyc+PHBhdGggZD0nTTAgMTMuNzcybDYuNTQ1LjkwMlY4LjQyNkgwek0wIDcuNjJoNi41NDVWMS4yOTZMMCAyLjE5OHptNy4yNjUgNy4xNWw4LjcwNCAxLjJWOC40MjVINy4yNjV6bTAtMTMuNTd2Ni40Mmg4LjcwNFYweicgZmlsbD0nI0ZGRicvPjwvc3ZnPg==)
   }
 </style>

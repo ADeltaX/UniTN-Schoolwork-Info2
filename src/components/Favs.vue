@@ -3,27 +3,26 @@
         <div v-if="busy" style="position: absolute; width: 100%; z-index: 100;">
             <md-progress-bar class="md-accent" md-mode="indeterminate"></md-progress-bar>
         </div>
-        <div v-else v-bind:class="[(favs.length == 0 || !user.loggedIn) ? 'centered-container' : '']">
-            <md-empty-state v-if="!user.loggedIn"
-                md-icon="favorite"
-                md-label="Login to see your favourites!"
-                md-description="By logging in, you'll be able to handle your favourites.">
-                <md-button class="md-primary md-raised" @click="goTo('login')">Login</md-button>
-            </md-empty-state>
+        <div v-else>
+            <div v-bind:class="[(favs.length == 0 || !user.loggedIn) ? 'centered-container' : '']">
+                <md-empty-state v-if="!user.loggedIn"
+                    md-icon="favorite"
+                    md-label="Login to see your favourites!"
+                    md-description="By logging in, you'll be able to handle your favourites.">
+                    <md-button class="md-primary md-raised" @click="goTo('login')">Login</md-button>
+                </md-empty-state>
 
-            <md-empty-state v-else-if="favs.length == 0"
-                md-icon="favorite"
-                md-label="No favourites yet!"
-                md-description="This page feels empty without your favourite games :(">
-            </md-empty-state>
-
-            <div v-else-if="!busy" class="md-layout md-gutter"  style="margin-bottom: 56px">
-                <div
-                    class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
-                    v-for="game in games"
-                    :key="game.id"
-                    @click="getGame(game.id, game.slug)">
-                    <md-card md-with-hover>
+                <md-empty-state v-else-if="favs.length == 0"
+                    md-icon="favorite"
+                    md-label="No favourites yet!"
+                    md-description="This page feels empty without your favourite games :(">
+                </md-empty-state>
+            </div>
+            
+            <div v-if="!busy && user.loggedIn" class="flex-container" style="margin-bottom: 24px">
+                <div v-for="game in games"
+                    :key="game.id">
+                    <md-card md-with-hover @click.native="getGame(game.id, game.slug)">
                         <md-card-media-cover md-solid>
                             <md-card-media md-big>
                                 <div class="container" :style='{ backgroundImage: "url(" + game.background_image + ")", }'></div>
@@ -45,9 +44,13 @@
                         </md-card-media-cover>
                     </md-card>
                 </div>
-            <!--    <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
-                </div>-->
             </div>
+
+            <md-snackbar :md-active.sync="showSnackbar">
+                <span>{{msg}}</span>
+            </md-snackbar>
+                <!--    <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
+                </div>-->
         </div>
     </div>
 </template>
@@ -72,6 +75,8 @@
                 games: [],
                 page: 0,
                 busy: false,
+                msg: "",
+                showSnackbar: false
             };
         },
 
@@ -83,10 +88,10 @@
         },
 
         methods: {
-
             getGame(id, slug) {
                 this.$router.push({ name: 'game', params: { id, slug } })
             },
+
             checkFavs(userId) {
                 this.busy = true;
                 let self = this;
@@ -102,17 +107,17 @@
                        // console.log("log self.favs");
                        // console.log(self.favs);
                         const axios = require("axios");
-                        self.favs.forEach(el =>{
+                        self.favs.forEach(el => {
                             let url="https://api.rawg.io/api/games/".concat(el["game-id"]);
                             // console.log("I'm here: url="+url+"\n");
-                            axios.get(url).then((response)=> {
+                            axios.get(url).then((response) => {
                                // console.log(self);
                                 self.games = self.games.concat(response.data);
                                 //console.log("Game added")
-                                })
-                                .catch((error)=>{
-                                    console.log(error);
-                                })
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            })
                         });
                         self.busy=false;
                     } else {
@@ -125,14 +130,18 @@
                 });
             },
 
-            remFavs(gameId, userId,elementId) {
+            remFavs(gameId, userId, elementId) {
                 let id = "".concat(userId).concat("-").concat(gameId);
                 let db = firebase.firestore();
                 //this.checkFavs(gameId, userId);
                 let self = this;
 
                 db.collection("favourites").doc(id).delete().then(function () {
-                    console.log("Document successfully deleted!");
+                    self.showSnackbar = false;
+                    self.showSnackbar = true;
+                    
+                    self.msg = "Removed from favourites!";
+
                     self.games.splice(elementId,1); // cancella il gioco dall'array
                     self.favs.splice(elementId,1);
                     self.$forceUpdate();

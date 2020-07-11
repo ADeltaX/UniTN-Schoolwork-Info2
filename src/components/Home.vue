@@ -8,7 +8,7 @@
                 :key="game.id">
                 <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
                     <md-card-media md-big>
-                        <div class="img-container" :style='{ backgroundImage: "url(" + game.background_image + ")", }'></div>
+                        <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
                     </md-card-media>
                     <md-card-area>
                         <md-card-header>
@@ -16,10 +16,9 @@
                         </md-card-header>
                         <md-card-actions v-if="user.loggedIn">
                             <span>
-                                <md-button
-                                        class="md-icon-button"
-                                        @click.stop="addFavs(game.id,user.data.email,games.indexOf(game))">
-                                <md-icon v-if="user.loggedIn">{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
+                                <md-button class="md-icon-button"
+                                        @click.stop="addFavs(game.id, user.data.email, games.indexOf(game))">
+                                    <md-icon>{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
                                 </md-button>
                             </span>
                         </md-card-actions>
@@ -49,7 +48,8 @@
             return {
                 games: [],
                 page: 0,
-                busy: false
+                busy: false,
+                canLoadMore: true
             };
         },
         
@@ -60,31 +60,44 @@
         },
 
         methods: {
+            getResizedImage(url, size = 640){
+                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
+                if (url == null) //Capita che il server risponda con null
+                    return null;
+
+                return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
+            },
 
             getGame(id,slug) {
-                this.$router.push({ name: 'game', params: { id,slug } })
+                this.$router.push({ name: 'game', params: { id, slug } })
             },
 
             loadMore() {
                 //console.log("Adding more data results");
+                if (!this.canLoadMore)
+                    return;
+
                 this.busy = true;
 
                 this.page += 1;
                 const axios = require("axios");
                 let url="https://api.rawg.io/api/games?page=".concat(this.page);
-                axios.get(url).then((response)=>{
+                axios.get(url).then((response) => {
                     this.games = this.games.concat(response.data.results);
                     this.games.forEach(el => {
                         if (this.user.loggedIn)
                             this.checkFavs(el.id, this.user.data.email, this.games.indexOf(el));
-                        
-                        this.loading = false;
-                    })
+                    });
+
                     this.busy = false;
-                    console.log(response)
+
+                    if (response.data.next == null)
+                        this.canLoadMore = false;
                 })
-                .catch((error)=>{
-                    console.log(error)
+                .catch((error) => {
+                    this.page--;
+                    console.log(error);
+                    this.busy = false;
                 });
                 this.$forceUpdate();
             },
@@ -97,7 +110,7 @@
                 //controlliamo se è già inserito
                 db.collection("favourites").doc(id)
                     .get().then(function (ris) {
-                    self.games[elementId].user_game =ris.exists;
+                        self.games[elementId].user_game = ris.exists;
                     }).catch(function (error) {
                     console.error("Error reading document: ", error);
                 });
@@ -109,13 +122,12 @@
                 this.checkFavs(gameId, userId,elementId);
                 let self=this;
 
-                if(this.games[elementId].user_game)
-                {
+                if(this.games[elementId].user_game) {
                     db.collection("favourites").doc(id).delete().then(function () {
                         console.log("Document successfully deleted!");
                         self.games[elementId].user_game = false;
-
-                }).catch(function (error) {
+                    })
+                    .catch(function (error) {
                         console.error("Error removing document: ", error);
                     });
                 } else {
@@ -134,9 +146,3 @@
         }
     };
 </script>
-
-<style lang="scss" scoped>
-  .md-progress-bar {
-    margin: -16px;
-  }
-</style>

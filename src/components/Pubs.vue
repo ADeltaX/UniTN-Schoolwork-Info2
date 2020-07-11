@@ -37,7 +37,8 @@
                 pubs: [],
                 offset: 0,
                 busy: false,
-                page:1
+                page: 0,
+                canLoadMore: true
             };
         },
 
@@ -48,21 +49,35 @@
         },
 
         methods: {
+            getResizedImage(url, size = 640){
+                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
+                if (url == null) //Capita che il server risponda con null
+                    return null;
+
+                return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
+            },
+
             getGame(id,slug) {
                 this.$router.push({ name: 'pub', params: { id,slug } })
             },
 
             loadMore() {
+                if (!this.canLoadMore)
+                    return;
+
                 this.busy = true;
-                this.page += 1;
+                this.page++;
                 const axios = require("axios");
                 let url="https://api.rawg.io/api/publishers?page=".concat(this.page);
-                axios.get(url).then((response)=>{
+                axios.get(url).then((response) => {
                     this.pubs = this.pubs.concat(response.data.results);
-                    //console.log(response)
                     this.busy = false;
+
+                    if (response.data.next == null)
+                        this.canLoadMore = false;
                 })
                 .catch((error)=>{
+                    this.page--;
                     this.busy = false;
                     console.log(error);
                 });

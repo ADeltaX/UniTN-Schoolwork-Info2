@@ -8,7 +8,7 @@
                 :key="game.id">
                 <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
                     <md-card-media md-big>
-                        <div class="img-container" :style='{ backgroundImage: "url(" + game.background_image + ")", }'></div>
+                        <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
                     </md-card-media>
                     <md-card-area>
                         <md-card-header>
@@ -19,7 +19,7 @@
                                 <md-button
                                         class="md-icon-button"
                                         @click.stop="addFavs(game.id,user.data.email,pub.indexOf(game))">
-                                <md-icon v-if="user.loggedIn">{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
+                                <md-icon>{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
                                 </md-button>
                             </span>
                         </md-card-actions>
@@ -45,7 +45,8 @@
             return {
                 pub: [],
                 page: 0,
-                busy: false
+                busy: false,
+                canLoadMore: true
             };
         },
 
@@ -63,6 +64,14 @@
         },
 
         methods: {
+            getResizedImage(url, size = 640){
+                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
+                if (url == null) //Capita che il server risponda con null
+                    return null;
+
+                return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
+            },
+
             goBack: function() {
                 this.$router.back();
             },
@@ -110,23 +119,29 @@
                     }).catch(function (error) {
                         console.error("Error adding document: ", error);
                     });
-
                 }
-
             },
+
             loadMore() {
+                if (!this.canLoadMore)
+                    return;
+
                 this.busy = true;
-                this.page += 1;
+                this.page++;
                 const axios = require("axios");
                 let url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&publishers=").concat(this.$route.params.id);
                 axios.get(url).then((response)=>{
                     this.pub = this.pub.concat(response.data.results);
                     this.pub.forEach(el => {
-                        this.checkFavs(el.id,this.user.data.email,this.pub.indexOf(el))
+                        this.checkFavs(el.id, this.user.data.email, this.pub.indexOf(el))
                     });
                     this.busy = false;
+
+                    if (response.data.next == null)
+                        this.canLoadMore = false;
                 })
                 .catch((error)=>{
+                    this.page--;
                     this.busy = false;
                     console.log(error);
                 });

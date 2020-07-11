@@ -72,45 +72,33 @@
                 this.showSnackbar = false;
                 let router = this.$router;
                 let db = firebase.firestore();
-                let self=this;
+                let self = this;
 
                 firebase.auth()
                 .createUserWithEmailAndPassword(this.form.email, this.form.password)
-                .then(data => {
-                    data.user
-                    .updateProfile({
+                .then(data => {                   
+                    data.user.updateProfile({
                         displayName: self.form.name,
                         email: self.form.email
                     })
                     .then(() => {
-                        // console.log("  form.email: "+self.form.email); console.log("replace");
-                        //TODO: password in chiaro?
-                        if(self.error==null) {
-                            db.collection("users").doc(self.form.email.toLowerCase()).set({
-                                username: self.form.name,
-                                password: self.form.password,
-                            })
-                            .then(function () {
-                                console.log("Utente aggiunto con successo");
-                            })
-                            .catch(function (error) {
-                                console.error("Error writing document: ", error);
-                            });
-                        }
-                        firebase.auth()
-                            .signInWithEmailAndPassword(this.form.email, this.form.password)
-                            .then(function() {
-                                console.log("Utente loggato con successo");
-                                router.replace("/");
-                                self.loading = false;
-                                self.$forceUpdate();
-                            })
-                            .catch(err => {
-                                self.error = err.message;
-                                self.showSnackbar = true;
-                                self.loading = false;
-                            });
+                        //TODO: password hashato
 
+                        //FIX for login issue.
+                        self.user.data.displayName = self.form.name;
+
+                        db.collection("users").doc(self.form.email.toLowerCase()).set({
+                            username: self.form.name,
+                            password: self.form.password,
+                        })
+                        .then(function () {
+                            console.log("Utente aggiunto con successo");
+                        })
+                        .catch(function (error) {
+                            console.error("Error writing document: ", error);
+                        });
+
+                        router.replace("/");
                     });
                 })
                 .catch(err => {

@@ -151,8 +151,6 @@
     </div>
 </template>
 
-
-
 <script>
 
     import {mapGetters} from "vuex";
@@ -163,20 +161,19 @@
     export default {
         data: function() {
             return {
-
                 game: null,
                 showSnackbar: false,
-                review:{
-                    title:"",
-                    score:60,
-                    text:""
+                review: {
+                    title: "",
+                    score: 60,
+                    text: ""
                 },
-                rexists:false, //se la review dell'utente esiste o meno
-                reviews:[],
-                busy:false,
-                page:0,
+                rexists: false, //se la review dell'utente esiste o meno
+                reviews: [],
+                busy: false,
+                page: 0,
                 gid: this.$route.params.id,
-                error:null
+                error: null
 
             };
         },
@@ -187,7 +184,7 @@
             }),
 
         },
-        created: function() {
+        created() {
             console.clear();
             const axios = require("axios");
 
@@ -199,13 +196,13 @@
             axios.get(url).then((response)=>{
                 this.game = response.data;
                 //console.log(response);
-
-
             })
-                .catch((error)=>{
-                    console.log(error)
-                });
+            .catch((error)=>{
+                console.log(error)
+            });
+
             this.$forceUpdate();
+
             if(this.user.loggedIn) {
                 let db = firebase.firestore();
                 let self = this;

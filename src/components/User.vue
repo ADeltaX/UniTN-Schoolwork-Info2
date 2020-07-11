@@ -1,5 +1,5 @@
 <template>
-    <div style="position: relative; height: 100%">
+    <div class="centered-container" style="position: relative; height: 100%">
         <md-card>
             <md-card-header>Utente con mail {{user.data.email}} </md-card-header>
             <md-card-content>

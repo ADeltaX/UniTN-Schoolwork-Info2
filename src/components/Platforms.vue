@@ -8,7 +8,7 @@
                 :key="game.id">
                 <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
                     <md-card-media md-big>
-                        <div class="img-container" :style='{ backgroundImage: "url(" + game.image_background + ")", }'></div>
+                        <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.image_background) + ")", }'></div>
                     </md-card-media>
                     <md-card-area>
                         <md-card-header>
@@ -36,7 +36,8 @@
                 platforms: [],
                 offset: 0,
                 busy: false,
-                page:0
+                page: 0,
+                canLoadMore: true
             };
         },
         created: function() {
@@ -48,31 +49,40 @@
         //TODO: STOP LOADING IF NEXT PAGE IS NULL!!!!
 
         methods: {
+            getResizedImage(url, size = 640){
+                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
+                if (url == null) //Capita che il server risponda con null
+                    return null;
+
+                return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
+            },
 
             getGame(id,slug) {
                 this.$router.push({ name: 'platform', params: { id ,slug} })
             },
+
             loadMore() {
+                if (!this.canLoadMore)
+                    return;
+
+                this.page++;
                 this.busy = true;
-                this.page += 1;
                 const axios = require("axios");
-                let url="https://api.rawg.io/api/platforms?page=".concat(this.page);
-                axios.get(url).then((response)=>{
+                let url="https://api.rawg.io/api/platforms?&page_size=20&page=".concat(this.page);
+                axios.get(url).then((response) => {
                     this.platforms= this.platforms.concat(response.data.results);
                     this.busy = false;
-                    //console.log(response)
+
+                    if (response.data.next == null)
+                        this.canLoadMore = false;
                 })
                 .catch((error)=>{
+                    this.page--;
                     this.busy = false;
                     console.log(error);
                 });
-                this.busy = false;
                 this.$forceUpdate();
-
-
             }
-
         }
-
     };
 </script>

@@ -163,6 +163,7 @@
     export default {
         data: function() {
             return {
+
                 game: null,
                 showSnackbar: false,
                 review:{
@@ -187,6 +188,7 @@
 
         },
         created: function() {
+            console.clear();
             const axios = require("axios");
 
             // register, i.e. in a `mounted` hook

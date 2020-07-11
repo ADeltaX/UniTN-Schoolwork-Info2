@@ -76,6 +76,7 @@
         },
 
         created: function() {
+            console.clear();
             if (this.user.loggedIn)
                 this.checkFavs(this.user.data.email);
             this.$forceUpdate();

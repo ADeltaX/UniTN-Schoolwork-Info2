@@ -61,6 +61,7 @@
         },
 
         created() {
+            console.clear();
             if (this.user.loggedIn)
                 this.$router.replace("/");
         },

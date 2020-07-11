@@ -54,6 +54,7 @@
         },
         
         created() {
+            console.clear();
             this.loadMore();
             this.$forceUpdate();
         },

@@ -17,7 +17,7 @@
                 md-description="Go to your favourite game a write a good review about it :)">
             </md-empty-state>
 
-            <div class="md-layout md-gutter" v-else-if="!busy"  style="margin-bottom: 56px">
+            <div v-else-if="!busy" class="md-layout md-gutter"  style="margin-bottom: 56px">
                 <div
                     class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                     v-for="rev in revs"
@@ -34,8 +34,8 @@
                     </md-card-content>
                     <md-card-actions>
                         <template>
-                        <md-icon>thumb_up</md-icon>
-                        {{rev.upvotes}}
+                            <md-icon>thumb_up</md-icon>
+                            {{rev.upvotes}}
                         </template>
 
                         <md-icon>thumb_down</md-icon>
@@ -47,7 +47,6 @@
                                 @click.stop="remRev(rev.id,user.data.email,revs.indexOf(rev))">
                             <md-icon>delete</md-icon>
                         </md-button>
-
                     </md-card-actions>
                 </div>
                 <!-- <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
@@ -95,9 +94,11 @@
                         self.revs = doc.docs.map(doc => doc.data());
                         self.busy = false;
                     } else {
+                        self.busy = false;
                         console.log("No reviews");
                     }
                 }).catch(function(error) {
+                    self.busy = false;
                     console.log("Error getting document:", error);
                 });
             },

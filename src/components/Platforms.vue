@@ -14,15 +14,6 @@
                         <md-card-header>
                             <span class="md-title">{{game.name}}</span>
                         </md-card-header>
-                        <md-card-actions v-if="user.loggedIn">
-                            <span>
-                                <md-button
-                                        class="md-icon-button"
-                                        @click.stop="addFavs(game.id,user.data.email,games.indexOf(game))">
-                                <md-icon v-if="user.loggedIn">{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
-                                </md-button>
-                            </span>
-                        </md-card-actions>
                     </md-card-area>
                 </md-card-media-cover>
             </md-card>

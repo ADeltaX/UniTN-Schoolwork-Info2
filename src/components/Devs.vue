@@ -1,12 +1,12 @@
 <template>
-    <div class="md-layout md-gutter">
-        <div
-                class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
-                v-for="game in devs"
-                :key="game.id"
-                @click="getGame(game.id,game.slug)">
-            <md-card md-with-hover>
-                <md-card-media-cover md-solid>
+    <div>
+        <div v-if="busy" style="position: absolute; width: 100%; z-index: 100;">
+            <md-progress-bar class="md-accent" md-mode="indeterminate"></md-progress-bar>
+        </div>
+        <div class="flex-container" style="margin-bottom: 24px">
+            <md-card md-with-hover v-for="game in devs"
+                :key="game.id">
+                <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
                     <md-card-media md-big>
                         <div class="img-container" :style='{ backgroundImage: "url(" + game.image_background + ")", }'></div>
                     </md-card-media>
@@ -14,12 +14,21 @@
                         <md-card-header>
                             <span class="md-title">{{game.name}}</span>
                         </md-card-header>
-                        <md-card-actions></md-card-actions>
+                        <md-card-actions v-if="user.loggedIn">
+                            <span>
+                                <md-button
+                                        class="md-icon-button"
+                                        @click.stop="addFavs(game.id,user.data.email,games.indexOf(game))">
+                                <md-icon v-if="user.loggedIn">{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
+                                </md-button>
+                            </span>
+                        </md-card-actions>
                     </md-card-area>
                 </md-card-media-cover>
             </md-card>
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="400" >
+            </div>
         </div>
-        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10"></div>
     </div>
 </template>
 <script>
@@ -35,7 +44,7 @@
             return {
                 devs: [],
                 offset: 0,
-                loading: false,
+                busy: false,
                 showSnackbarTrue: false,
                 showSnackbarFalse: false,
                 page:1
@@ -51,24 +60,20 @@
                 this.$router.push({ name: 'dev', params: { id,slug } })
             },
             loadMore() {
-                this.loading = true;
+                this.busy = true;
                 this.page += 1;
                 const axios = require("axios");
                 let url="https://api.rawg.io/api/developers?page=".concat(this.page);
                 axios.get(url).then((response)=>{
+                    this.busy = false;
                     this.devs = this.devs.concat(response.data.results);
-                    //console.log(response)
                 })
-                    .catch((error)=>{
-                        console.log(error)
-                    });
-                this.loading = false;
+                .catch((error)=>{
+                    this.busy = false;
+                    console.log(error);
+                });
                 this.$forceUpdate();
-
-
             }
-
         }
-
     };
 </script>

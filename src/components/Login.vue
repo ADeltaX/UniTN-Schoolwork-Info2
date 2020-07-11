@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="loading-overlay" v-if="loading">
-                <md-progress-spinner md-mode="indeterminate" :md-stroke="2"></md-progress-spinner>
+                <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
             </div>
             <md-snackbar md-position="left" :md-active.sync="showSnackbar">
                 <span>{{error}}</span>
@@ -30,14 +30,22 @@
 </template>
 
 <script>
+    import { mapGetters } from "vuex";
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
 
     export default {
+        computed: {
+            // mappa `this.user` a `this.$store.getters.user`
+            ...mapGetters({
+                user: "user"
+            })
+        },
+
         data() {
             return {
-                loading:false,
+                loading: false,
                 showSnackbar: false,
                 form: {
                     email: "",
@@ -45,6 +53,11 @@
                 },
                 error: null
             };
+        },
+
+        created() {
+            if (this.user.loggedIn)
+                this.$router.replace("/");
         },
 
         methods: {

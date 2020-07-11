@@ -1,9 +1,9 @@
 <template>
-  <div title="app">
+  <div>
     <md-app md-waterfall md-mode="fixed">
       <md-app-toolbar class="md-primary">
         <div class="md-toolbar-row">
-          <md-button class="md-icon-button" @click="menuVisible = !menuVisible">
+          <md-button v-if="loaded" class="md-icon-button" @click="menuVisible = !menuVisible">
             <md-icon>menu</md-icon>
           </md-button>
           <span class="md-title">Game Review</span>
@@ -13,7 +13,7 @@
             md-layout="box" style="max-width: 240px; margin: 0px 16px 0px 16px">
             <label>Search...</label>
           </md-autocomplete> -->
-          <div class="md-toolbar-section-end">
+          <div v-if="loaded" class="md-toolbar-section-end">
             <md-button @click="logout" v-if="user.loggedIn">
               Logout
             </md-button>
@@ -91,7 +91,10 @@
         </md-list>
       </md-app-drawer>
       <md-app-content>
-          <router-view></router-view>
+        <div v-if="!loaded" class="centered-container">
+          <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+        </div>
+        <router-view v-else></router-view>
       </md-app-content>
     </md-app>
   </div>
@@ -101,6 +104,7 @@
 
   import "@firebase/app";
   import firebase from "@firebase/app";
+  import store from "./store";
   import "@firebase/firestore";
  // import firebase from 'firebase'
   import { mapGetters } from "vuex";
@@ -110,13 +114,33 @@
     computed: {
       // mappa `this.user` a `this.$store.getters.user`
       ...mapGetters({
-      user: "user"
+        user: "user"
       })
     },
 
-    name: "app",
+    created() {
+      const configOptions = {
+        apiKey: "AIzaSyA86bFqzVk8ukOzjf3E61J9YEBzolj2Wb0",
+        authDomain: "gamereview-bb9af.firebaseapp.com",
+        databaseURL: "https://gamereview-bb9af.firebaseio.com",
+        projectId: "gamereview-bb9af",
+        storageBucket: "gamereview-bb9af.appspot.com",
+        messagingSenderId: "228925046389",
+        appId: "1:228925046389:web:e33f2978a7a8757812823c"
+      };
+
+      !firebase.apps.length ? firebase.initializeApp(configOptions) : firebase.app();
+      firebase.firestore()
+      firebase.auth().onAuthStateChanged(user => {
+        store.dispatch("fetchUser", user);
+        this.loaded = true;
+      });
+    },
+
+    name: "GameReview",
 
     data: () => ({
+      loaded: false,
       menuVisible: false,
       showDialog: false,
       //dataForSearchbox: []
@@ -166,29 +190,96 @@
     margin-right: 8px;
     border-radius: 0 24px 24px 0;
   }
+
+  .centered-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 100%;
+  }
 </style>
 
 <style>
+  .centered-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 100% !important;
+  }
+
+  .flex-container {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
   .md-card {
     width: 450px;
     height: 300px;
     margin: 16px;
     display: inline-block;
     vertical-align: top;
-    border-radius: 8px;
+    border-radius: 8px !important;
+    transition: all .25s ease-out !important;
+    transition-property: box-shadow, height, background;
   }
+
+  .md-card .md-title {
+      transition: font-size .25s ease-out;
+    }
 
   .md-card-area {
     backdrop-filter: blur(32px);
-    border-radius: 0 0 8px 8px;
+    border-radius: 0px 0px 8px 8px;
+    transition: height .25s ease-out;
   }
 
   .img-container {
-    width: 450px;
+    width: 100%;
     height: 300px;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: 50% 50%;
     border-radius: 8px;
+    transition: height .25s ease-out;
+  }
+
+  @media only screen and (max-width: 520px) {
+    .md-card {
+      width: calc(100% - 32px);
+      height: 240px;
+      transition: all .25s ease-out !important;
+      transition-property: box-shadow, height, background;
+    }
+
+    .img-container {
+      height: 240px;
+      transition: height .25s ease-out;
+    }
+
+    .md-card .md-title {
+      font-size: 16px !important;
+      line-height: 20px !important;
+      transition: font-size .25s ease-out;
+    }
+  } 
+
+  @media only screen and (max-width: 240px) {
+    .md-card {
+      width: 180px;
+    }
+
+    .md-card .md-title {
+      font-size: 12px !important;
+      line-height: 16px !important;
+      transition: font-size .25s ease-out;
+    }
+  }
+
+  .md-progress-bar {
+    margin: -16px;
   }
 </style>

@@ -1,12 +1,12 @@
 <template>
-    <div class="md-layout md-gutter" style="margin-bottom: 56px">
-        <div
-            class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
-            v-for="game in games"
-            :key="game.id"
-            @click="getGame(game.id,game.slug)">
-            <md-card md-with-hover>
-                <md-card-media-cover md-solid>
+    <div>
+        <div v-if="busy" style="position: absolute; width: 100%; z-index: 100;">
+            <md-progress-bar class="md-accent" md-mode="indeterminate"></md-progress-bar>
+        </div>
+        <div class="flex-container" style="margin-bottom: 24px">
+            <md-card md-with-hover v-for="game in games"
+                :key="game.id">
+                <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
                     <md-card-media md-big>
                         <div class="img-container" :style='{ backgroundImage: "url(" + game.background_image + ")", }'></div>
                     </md-card-media>
@@ -15,19 +15,19 @@
                             <span class="md-title">{{game.name}}</span>
                         </md-card-header>
                         <md-card-actions v-if="user.loggedIn">
-                              <span>
+                            <span>
                                 <md-button
                                         class="md-icon-button"
                                         @click.stop="addFavs(game.id,user.data.email,games.indexOf(game))">
-                                  <md-icon v-if="user.loggedIn">{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
+                                <md-icon v-if="user.loggedIn">{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
                                 </md-button>
-                              </span>
+                            </span>
                         </md-card-actions>
                     </md-card-area>
                 </md-card-media-cover>
             </md-card>
-        </div>
-        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="400" >
+            </div>
         </div>
     </div>
 </template>
@@ -45,23 +45,25 @@
                 user: "user"
             })
         },
-        data: function() {
+        data() {
             return {
                 games: [],
-                page:0,
-                busy:false,
+                page: 0,
+                busy: false
             };
         },
-        created: function() {
-            console.clear();
+        
+        created() {
             this.loadMore();
             this.$forceUpdate();
         },
+
         methods: {
 
             getGame(id,slug) {
                 this.$router.push({ name: 'game', params: { id,slug } })
             },
+
             loadMore() {
                 //console.log("Adding more data results");
                 this.busy = true;
@@ -72,23 +74,25 @@
                 axios.get(url).then((response)=>{
                     this.games = this.games.concat(response.data.results);
                     this.games.forEach(el => {
-                        this.checkFavs(el.id,this.user.data.email,this.games.indexOf(el))
+                        if (this.user.loggedIn)
+                            this.checkFavs(el.id, this.user.data.email, this.games.indexOf(el));
+                        
+                        this.loading = false;
                     })
                     this.busy = false;
                     console.log(response)
                 })
-                    .catch((error)=>{
-                        console.log(error)
-                    });
-                this.loading = false;
+                .catch((error)=>{
+                    console.log(error)
+                });
                 this.$forceUpdate();
-
-
             },
+
             checkFavs(gameId, userId,elementId) {
                 let id = "".concat(userId).concat('-').concat(gameId);
-                 let self=this;
-                 let db = firebase.firestore();
+                let self=this;
+                let db = firebase.firestore();
+                
                 //controlliamo se è già inserito
                 db.collection("favourites").doc(id)
                     .get().then(function (ris) {
@@ -124,12 +128,14 @@
                     }).catch(function (error) {
                         console.error("Error adding document: ", error);
                     });
-
                 }
-
             }
-
         }
-
     };
 </script>
+
+<style lang="scss" scoped>
+  .md-progress-bar {
+    margin: -16px;
+  }
+</style>

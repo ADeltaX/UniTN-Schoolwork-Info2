@@ -24,7 +24,7 @@
                  <md-button class="md-raised md-primary" @click="submit">Register</md-button>
              </div>
             <div class="loading-overlay" v-if="loading">
-                <md-progress-spinner md-mode="indeterminate" :md-stroke="2"></md-progress-spinner>
+                <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
             </div>
             <md-snackbar md-position="left" :md-active.sync="showSnackbar">
                 <span>{{error}}</span>
@@ -34,6 +34,7 @@
 </template>
 
 <script>
+    import { mapGetters } from "vuex";
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
@@ -52,9 +53,22 @@
             };
         },
 
-        //TODO;controllare perché non va più pd2
+        computed: {
+            // mappa `this.user` a `this.$store.getters.user`
+            ...mapGetters({
+                user: "user"
+            })
+        },
+
+        created() {
+            if (this.user.loggedIn)
+                this.$router.replace("/");
+        },
+
         methods: {
             submit() {
+                this.loading = true;
+                this.showSnackbar = false;
                 let router = this.$router;
                 let db = firebase.firestore();
                 let self=this;
@@ -62,30 +76,30 @@
                 firebase.auth()
                 .createUserWithEmailAndPassword(this.form.email, this.form.password)
                 .then(data => {
-                    console.log("updating");
                     data.user
-                        .updateProfile({
-                            displayName: self.form.name,
-                            email: self.form.email
-                        })
-                        .then(() => {
-                           // console.log("  form.email: "+self.form.email); console.log("replace");
-                            //TODO: password in chiaro?
-                            if(self.error==null) {
-                                db.collection("users").doc(self.form.email).set({
-                                    username: self.form.name,
-                                    password: self.form.password,
-                                })
-                                    .then(function () {
-                                        console.log("Utente aggiunto con successo");
-
-                                    })
-                                    .catch(function (error) {
-                                        console.error("Error writing document: ", error);
-                                    });
-                            }
-                            router.replace( {name:"home"});self.$forceUpdate()
-                        });
+                    .updateProfile({
+                        displayName: self.form.name,
+                        email: self.form.email
+                    })
+                    .then(() => {
+                        // console.log("  form.email: "+self.form.email); console.log("replace");
+                        //TODO: password in chiaro?
+                        if(self.error==null) {
+                            db.collection("users").doc(self.form.email).set({
+                                username: self.form.name,
+                                password: self.form.password,
+                            })
+                            .then(function () {
+                                console.log("Utente aggiunto con successo");
+                            })
+                            .catch(function (error) {
+                                console.error("Error writing document: ", error);
+                            });
+                        }
+                        router.replace({ name: "home" });
+                        this.loading = false;
+                        this.$forceUpdate();
+                    });
                 })
                 .catch(err => {
                     this.error = err.message;
@@ -94,8 +108,6 @@
                 });
 
                 //Lo aggiungiamo alla collection utenti, così da poter salvare lo username
-
-
             }
         }
     };

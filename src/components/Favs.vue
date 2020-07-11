@@ -24,7 +24,7 @@
                 class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                 v-for="game in games"
                 :key="game.id"
-                @click="getGame(game.id)">
+                @click="getGame(game.id,game.slug)">
                 <md-card md-with-hover>
                     <md-card-media-cover md-solid>
                         <md-card-media md-big>
@@ -86,8 +86,8 @@
 
         methods: {
 
-            getGame(id) {
-                this.$router.push({ name: 'game', params: { id } })
+            getGame(id,slug) {
+                this.$router.push({ name: 'game', params: { id,slug } })
             },
             checkFavs(userId) {
 

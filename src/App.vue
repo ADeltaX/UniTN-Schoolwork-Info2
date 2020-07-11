@@ -51,38 +51,38 @@
               <span class="md-list-item-text">Home</span>
             </md-list-item>
           </router-link>
-          <router-link to="/reviews">
+          <router-link :to="{ name: 'reviews'}">
             <md-list-item @click="closeDrawer()">
               <md-icon>rate_review</md-icon>
               <span class="md-list-item-text">Reviews</span>
             </md-list-item>
           </router-link>
-          <router-link to="/favs">
+          <router-link :to="{ name: 'favs'}">
             <md-list-item @click="closeDrawer()">
               <md-icon>favorite</md-icon>
               <span class="md-list-item-text">Favourites</span>
             </md-list-item>
           </router-link>
-          <router-link to="/platforms">
+          <router-link :to="{ name: 'platforms'}">
             <md-list-item @click="closeDrawer()">
               <md-icon>video_label</md-icon>
               <span class="md-list-item-text">Platforms</span>
             </md-list-item>
           </router-link>
-          <router-link to="/pubs">
+          <router-link :to="{ name: 'pubs'}">
             <md-list-item @click="closeDrawer()">
               <md-icon>person</md-icon>
               <span class="md-list-item-text">Publishers</span>
             </md-list-item>
           </router-link>
-          <router-link to="/devs">
+          <router-link :to="{ name: 'devs'}">
             <md-list-item @click="closeDrawer()">
               <md-icon>group</md-icon>
               <span class="md-list-item-text">Developers</span>
             </md-list-item>
           </router-link>
           <md-divider v-if="user.loggedIn" style="margin: 8px 0 8px 0"></md-divider>
-          <router-link v-if="user.loggedIn" to="/user" style="margin-bottom: -400px;">
+          <router-link v-if="user.loggedIn" :to="{ name: 'user'}" style="margin-bottom: -400px;">
             <md-list-item @click="closeDrawer()">
               <md-icon>settings</md-icon>
               <span class="md-list-item-text">Settings</span>

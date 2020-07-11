@@ -18,7 +18,7 @@
                             <span>
                                 <md-button
                                         class="md-icon-button"
-                                        @click.stop="addFavs(game.id,user.data.email,games.indexOf(game))">
+                                        @click.stop="addFavs(game.id,user.data.email,pub.indexOf(game))">
                                 <md-icon v-if="user.loggedIn">{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
                                 </md-button>
                             </span>
@@ -121,8 +121,8 @@
                 let url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&publishers=").concat(this.$route.params.id);
                 axios.get(url).then((response)=>{
                     this.pub = this.pub.concat(response.data.results);
-                    this.dev.forEach(el => {
-                        this.checkFavs(el.id,this.user.data.email,this.dev.indexOf(el))
+                    this.pub.forEach(el => {
+                        this.checkFavs(el.id,this.user.data.email,this.pub.indexOf(el))
                     });
                     this.busy = false;
                 })

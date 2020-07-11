@@ -86,7 +86,7 @@
                         // console.log("  form.email: "+self.form.email); console.log("replace");
                         //TODO: password in chiaro?
                         if(self.error==null) {
-                            db.collection("users").doc(self.form.email).set({
+                            db.collection("users").doc(self.form.email.toLowerCase()).set({
                                 username: self.form.name,
                                 password: self.form.password,
                             })

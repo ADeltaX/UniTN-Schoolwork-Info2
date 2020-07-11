@@ -2,7 +2,7 @@
     <div class="centered-container">
         <md-content class="md-elevation-4">
             <div class="title">
-                <img src="../assets/GR_Logo_256.png">
+                <img alt="logo" src="../assets/GR_Logo_256.png">
                 <div class="md-title">Game Review</div>
                 <div class="md-body-1">Login to save your favorites and to write reviews!</div>
             </div>

@@ -65,7 +65,7 @@
                                     <source :src="game.clip.clip" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
-                                <img v-else :src="game.background_image" >
+                                <img v-else :src="game.background_image" alt="Immagine del gioco" >
                             </md-card-media>
                         </md-table-cell>
                         <md-table-cell>

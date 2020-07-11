@@ -30,14 +30,14 @@
                     md-position="center"
                     :md-duration="1000"
                     :md-active.sync="showSnackbarTrue"
-                    v-if="game.user_game == true">
+                    v-if="game.user_game === true">
                 <span>Inserted in favorites!</span>
             </md-snackbar>
             <md-snackbar
                     md-position="center"
                     :md-duration="1000"
                     :md-active.sync="showSnackbarFalse"
-                    v-if="game.user_game == true">
+                    v-if="game.user_game === true">
                 <span>Remove from favorites!</span>
             </md-snackbar>
         </div>

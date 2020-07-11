@@ -87,6 +87,11 @@ const router = new Router({
             name: 'user',
             component: User
         },
+        {
+            path: '*',
+            name: 'catchAll',
+            component: Home
+        }
 
     ]
 });

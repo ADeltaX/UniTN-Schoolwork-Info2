@@ -83,8 +83,8 @@
 
         methods: {
 
-            getGame(id) {
-                this.$router.push({ name: 'game', params: { id } })
+            getGame(id,slug) {
+                this.$router.push({ name: 'game', params: { id,slug } })
             },
             checkFavs(userId) {
                 this.busy = true;

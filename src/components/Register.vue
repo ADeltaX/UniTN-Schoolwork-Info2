@@ -97,9 +97,20 @@
                                 console.error("Error writing document: ", error);
                             });
                         }
-                        router.replace({ name: "home" });
-                        this.loading = false;
-                        this.$forceUpdate();
+                        firebase.auth()
+                            .signInWithEmailAndPassword(this.form.email, this.form.password)
+                            .then(function() {
+                                console.log("Utente loggato con successo");
+                                router.replace("/");
+                                self.loading = false;
+                                self.$forceUpdate();
+                            })
+                            .catch(err => {
+                                self.error = err.message;
+                                self.showSnackbar = true;
+                                self.loading = false;
+                            });
+
                     });
                 })
                 .catch(err => {

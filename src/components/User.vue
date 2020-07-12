@@ -34,6 +34,7 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
+    //import store from "../store"
 
     export default {
         computed: {
@@ -52,7 +53,9 @@
         },
 
         created() {
-            console.clear();
+            //console.clear();
+           // console.log(store)
+           // console.log(this.user.data.displayName);
             if (!this.user.loggedIn)
                 this.$router.replace("/");
         },
@@ -63,6 +66,8 @@
                 let user = db.collection("users").doc(mail);
                 let self=this;
 
+                //console.log(store)
+
                 if(name==="")
                 {
                     console.error("Error updating document: il nome è vuoto ");
@@ -71,12 +76,14 @@
                     return;
                 }
 
-                return user.update({
+                user.update({
                     username: name
                 })
                     .then(function() {
-                        console.log("User successfully updated!");
+
+                        self.user.data.displayName=name;
                         self.updated=true;
+                        self.$forceUpdate();
                     })
                     .catch(function(error) {
                         // The document probably doesn't exist.
@@ -84,6 +91,16 @@
                         self.error = "errore durante l'aggiornamento";
                         self.showSnackbar=true;
                     });
+                user = firebase.auth().currentUser;
+
+                user.updateProfile({
+                    displayName: name
+                }).then(function() {
+                    console.log("User successfully updated!");
+                }).catch(function(error) {
+                    console.error("Error updating document: ", error);
+                });
+
             },
             nuclearOption(mail) {
                 if(confirm("Vuoi veramente cancellare l'account? Verranno cancellate anche le review ed i preferiti!")){

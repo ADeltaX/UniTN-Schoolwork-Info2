@@ -24,6 +24,8 @@
 </template>
 <script>
     import { mapGetters } from "vuex";
+    import ls from "local-storage";
+
     export default {
         computed: {
             // mappa `this.user` a `this.$store.getters.user`
@@ -58,6 +60,8 @@
             },
 
             getGame(id,slug) {
+                ls("publisherId",id)
+                ls("publisherSlug",slug)
                 this.$router.push({ name: 'pub', params: { id,slug } })
             },
 

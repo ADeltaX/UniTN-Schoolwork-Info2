@@ -157,6 +157,7 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
+    import ls from "local-storage";
 
     export default {
         data: function() {
@@ -189,9 +190,14 @@
             const axios = require("axios");
 
             // register, i.e. in a `mounted` hook
-            window.addEventListener('unload', this.onReload);
+         //   window.addEventListener('unload', this.onReload);
 
-            let url = "https://api.rawg.io/api/games/".concat(this.$route.params.id);
+            let url;
+            if(this.$route.params.id != null)
+                url="https://api.rawg.io/api/games/".concat(this.$route.params.id);
+            else
+                url="https://api.rawg.io/api/games/".concat(ls("gameId").toString());
+
             console.log(url);
             axios.get(url).then((response)=>{
                 this.game = response.data;
@@ -206,7 +212,12 @@
             if(this.user.loggedIn) {
                 let db = firebase.firestore();
                 let self = this;
-                let id = this.user.data.email.concat("-").concat(this.$route.params.id)
+                let id;
+                if(this.$route.params.id != null)
+                     id = this.user.data.email.concat("-").concat(this.$route.params.id)
+                else
+                    id = this.user.data.email.concat("-").concat(ls("gameId").toString());
+
                 let doc = db.collection("reviews").doc(id);
                 // console.log("this:");
                 //console.log(this);
@@ -232,11 +243,6 @@
             goBack: function() {
                 this.$router.back();
             },
-            onReload(){
-               let id=this.gid.toString();
-
-                this.$router.push({ name: 'game', params: { id }});
-            },
             submit(userId,gameId){
                 let db = firebase.firestore();
                 let id = userId.concat("-").concat(gameId);
@@ -249,6 +255,15 @@
                 {
                     this.showSnackbar = true;
                     this.error="Titolo e descrizione sono obbligatori";
+                    console.error("Errore titolo e descrizione")
+
+                    return;
+
+                }
+                if(this.review.title.length > 30 || this.review.text.length > 500)
+                {
+                    this.showSnackbar = true;
+                    this.error="Titolo e descrizione non devono superare le dimensioni indicate";
                     console.error("Errore titolo e descrizione")
 
                     return;
@@ -275,35 +290,18 @@
                 })
                     .then(function() {
                         console.log("Review aggiunta con successo");
-                        self.$forceUpdate();
+                        self.$router.go();
                     })
                     .catch(function(error) {
                         console.error("Error writing document(review): ", error);
                     });
             },
-           /*- checkReview(userId,gameId){
-                let db = firebase.firestore();
-                let id = userId.concat("-").concat(gameId)
-                let doc = db.collection("reviews").doc(id);
-
-                doc.get().then(function(doc) {
-                    if (doc.exists) {
-                        console.log("review already exists")
-                        this.rexists=true;
-                    } else {
-                        console.log("review does not exists")
-                        this.rexists=false;
-                    }
-                }).catch(function(error) {
-                    console.log("Error getting document:", error);
-                });
-
-            },*/
             update(userId,gameId)
             {
                 let db = firebase.firestore();
                 let id = userId.concat("-").concat(gameId);
                 let doc = db.collection("reviews").doc(id);
+                let self=this;
 
                 if(this.review.title === ""|| this.review.text === "")
                 {
@@ -330,6 +328,7 @@
                 })
                     .then(function() {
                         console.log("Review successfully updated!");
+                        self.$router.go();
                     })
                     .catch(function(error) {
 
@@ -342,8 +341,14 @@
                 let db = firebase.firestore();
                 let self=this;
 
+                let id;
+                if(this.$route.params.id != null)
+                    id = self.$route.params.id
+                else
+                    id = ls("gameId");
 
-                db.collection("reviews").where("game-id", "==", self.$route.params.id).limit(10).orderBy("upvotes").startAt(self.page).get().then(function(doc) {
+
+                db.collection("reviews").where("game-id", "==", id).limit(10).orderBy("upvotes").startAt(self.page).get().then(function(doc) {
                     console.log(doc);
                     if (!doc.empty) {
                        self.reviews = doc.docs.map(doc => doc.data());
@@ -367,6 +372,7 @@
 <style lang="scss" scoped>
     .md-card {
         width: 320px;
+        height: fit-content;
         margin: 4px;
         display: inline-block;
         vertical-align: top;

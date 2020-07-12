@@ -143,5 +143,12 @@
         background-position: 50% 50%;
         border-radius: 8px;
     }
+    .md-card {
+        width: 320px;
+        height: fit-content;
+        margin: 4px;
+        display: inline-block;
+        vertical-align: top;
+    }
 </style>
 

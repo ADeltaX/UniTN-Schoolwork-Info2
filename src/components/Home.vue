@@ -36,6 +36,8 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
+    import ls from "local-storage"
+
 
     export default {
         computed: {
@@ -69,6 +71,8 @@
             },
 
             getGame(id,slug) {
+                ls("gameId",id)
+                ls("gameSlug",slug)
                 this.$router.push({ name: 'game', params: { id, slug } })
             },
 

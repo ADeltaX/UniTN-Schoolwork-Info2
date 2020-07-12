@@ -38,6 +38,7 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
+    import ls from "local-storage"
 
     export default {
         data: function() {
@@ -73,14 +74,20 @@
             },
 
             getGame(id,slug) {
+                ls("gameId",id)
+                ls("gameSlug",slug)
                 this.$router.push({ name: 'game', params: { id,slug } })
             },
 
             loadMore() {
                 this.busy = true;
                 this.page++;
+                let url
                 const axios = require("axios");
-                let url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&platforms=").concat(this.$route.params.id);
+                if(this.$route.params.id != null)
+                    url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&platforms=").concat(this.$route.params.id);
+                else
+                    url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&platforms=").concat(ls("platformId").toString());
                 axios.get(url).then((response) => {
                     this.games = this.games.concat(response.data.results);
                     this.games.forEach(el => {

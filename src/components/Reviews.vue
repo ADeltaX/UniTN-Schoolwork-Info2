@@ -44,7 +44,7 @@
                         <md-button class="md-icon-button">{{rev.rating}}</md-button>
                         <md-button
                                 class="md-icon-button"
-                                @click.stop="remRev(rev.id,user.data.email,revs.indexOf(rev))">
+                                @click.stop="remRev(rev['game-id'],user.data.email,revs.indexOf(rev))">
                             <md-icon>delete</md-icon>
                         </md-button>
                     </md-card-actions>
@@ -109,6 +109,7 @@
                 let db = firebase.firestore();
 
                 let self = this;
+               // console.log(self.revs[elementId]);
 
                 db.collection("reviews").doc(id).delete().then(function () {
                     console.log("Review successfully deleted!");

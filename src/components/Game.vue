@@ -193,6 +193,11 @@
          //   window.addEventListener('unload', this.onReload);
 
             let url;
+            if(this.$route.params.id == null && ls("gameId")== null)
+            {
+                this.$router.replace({name:"home"})
+            }
+
             if(this.$route.params.id != null)
                 url="https://api.rawg.io/api/games/".concat(this.$route.params.id);
             else

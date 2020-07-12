@@ -128,11 +128,32 @@
       };
 
       !firebase.apps.length ? firebase.initializeApp(configOptions) : firebase.app();
-      firebase.firestore()
+      let db =firebase.firestore()
       firebase.auth().onAuthStateChanged(user => {
         store.dispatch("fetchUser", user);
         this.loaded = true;
+        console.log("test")
       });
+      let self =this;
+      db.collection("users").doc(this.user.data.email).get().then(
+              function(doc) {
+                let data =doc.data();
+                let user={
+                  'email':"",
+                  'displayName':""
+                };
+                console.log(data);
+                user['email'] = self.user.data.email;
+                user['displayName']=data['username'];
+                store.commit("SET_USER", {
+                  displayName: user.displayName});
+                console.log(user)
+                console.log(store)
+                self.$forceUpdate()
+              }
+      )
+
+
     },
 
     name: "GameReview",

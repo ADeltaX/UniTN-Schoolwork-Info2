@@ -60,9 +60,9 @@
             },
 
             getGame(id,slug) {
-                ls("publisherId",id)
-                ls("publisherSlug",slug)
-                this.$router.push({ name: 'pub', params: { id,slug } })
+                ls("publisherId", id)
+                ls("publisherSlug", slug)
+                this.$router.push({ name: 'pub', params: { id, slug } })
             },
 
             loadMore() {

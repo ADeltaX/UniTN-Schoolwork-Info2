@@ -14,7 +14,7 @@ import Pub from '../components/Pub'
 import Pubs from '../components/Pubs'
 import Reviews from '../components/Reviews'
 import User from '../components/User'
-
+import P404 from '../components/404'
 
 Vue.use(Router)
 
@@ -43,7 +43,7 @@ const router = new Router({
             component: Game
         },
         {
-            path: '/Dev/:slug',
+            path: '/Dev/:id/:slug',
             name: 'dev',
             component: Dev
         },
@@ -90,7 +90,7 @@ const router = new Router({
         {
             path: '*',
             name: 'catchAll',
-            component: Home
+            component: P404
         }
 
     ]

@@ -133,16 +133,17 @@
                 this.page++;
                 const axios = require("axios");
                 let url;
-                if(this.$route.params.id == null && ls("publisherId")== null)
-                {
+
+                if(this.$route.params.id == null && ls("publisherId") == null) {
                     this.$router.replace({name:"home"})
                 }
-                if(this.$route.params.id != null)
-                    url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&publishers=").concat(this.$route.params.id);
-                else
-                    url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&publishers=").concat(ls("publisherId").toString());
 
-                axios.get(url).then((response)=>{
+                if(this.$route.params.id != null)
+                    url = "https://api.rawg.io/api/games?page=".concat(this.page).concat("&publishers=").concat(this.$route.params.id);
+                else
+                    url = "https://api.rawg.io/api/games?page=".concat(this.page).concat("&publishers=").concat(ls("publisherId").toString());
+
+                axios.get(url).then((response) => {
                     this.pub = this.pub.concat(response.data.results);
                     this.pub.forEach(el => {
                         this.checkFavs(el.id, this.user.data.email, this.pub.indexOf(el))
@@ -152,7 +153,7 @@
                     if (response.data.next == null)
                         this.canLoadMore = false;
                 })
-                .catch((error)=>{
+                .catch((error) => {
                     this.page--;
                     this.busy = false;
                     console.log(error);

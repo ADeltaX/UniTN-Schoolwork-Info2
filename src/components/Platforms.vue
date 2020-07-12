@@ -32,7 +32,7 @@
                 user: "user"
             })
         },
-        data: function() {
+        data() {
             return {
                 platforms: [],
                 offset: 0,
@@ -41,13 +41,11 @@
                 canLoadMore: true
             };
         },
-        created: function() {
+        created() {
             console.clear();
             this.loadMore();
             this.$forceUpdate();
         },
-
-        //TODO: STOP LOADING IF NEXT PAGE IS NULL!!!!
 
         methods: {
             getResizedImage(url, size = 640){
@@ -80,7 +78,7 @@
                     if (response.data.next == null)
                         this.canLoadMore = false;
                 })
-                .catch((error)=>{
+                .catch((error) => {
                     this.page--;
                     this.busy = false;
                     console.log(error);

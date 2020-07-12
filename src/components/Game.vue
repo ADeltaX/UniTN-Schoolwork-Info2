@@ -84,7 +84,7 @@
 
             </md-card-content>
             <md-card-actions>
-                <!-- TODO;fixare il goBack -->
+                <!-- TODO: fixare il goBack -->
                 <md-button class="md-icon-button" @click="goBack()">
                     <md-icon>fast_rewind</md-icon>
                 </md-button>
@@ -114,8 +114,6 @@
                             <label>Review</label>
                             <md-textarea required v-model="review.text" md-counter="500"></md-textarea>
                         </md-field>
-
-
                     </form>
                 </template>
             </md-card-content>
@@ -124,7 +122,6 @@
                 <md-button class="md-raised" @click="update(user.data.email,game.id)" v-if="rexists">UPDATE</md-button>
                 <md-button class="md-raised" @click="submit(user.data.email,game.id)" v-else>SUBMIT</md-button>
             </md-card-actions>
-
         </md-card>
         <md-snackbar md-position="left" :md-active.sync="showSnackbar">
             <span>{{error}}</span>
@@ -133,29 +130,24 @@
                  :key="rev.id">
             <md-card-header>
                 <p class="md-title">
-                        <i> {{rev.username}}</i>
-                    </p>
+                    <i>{{rev.username}}</i>
+                </p>
                 <p class="md-title">
-                        {{rev.title}}
-                    </p>
+                    {{rev.title}}
+                </p>
             </md-card-header>
-            <md-card-content >
-
+            <md-card-content>
                     {{rev.text}}
-
             </md-card-content>
             <md-card-actions>
                 {{rev.rating}}
             </md-card-actions>
-
         </md-card>
         <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" ></div>
-
     </div>
 </template>
 
 <script>
-
     import {mapGetters} from "vuex";
     import "@firebase/app";
     import firebase from "@firebase/app";
@@ -179,8 +171,6 @@
                 page: 0,
                 gid: this.$route.params.id,
                 error: null,
-
-
             };
         },
         computed: {

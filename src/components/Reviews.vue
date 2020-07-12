@@ -130,7 +130,7 @@
     };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
     .md-app {
         max-height: 250px;
         border: 1px solid rgba(#000, .12);
@@ -144,6 +144,7 @@
         background-position: 50% 50%;
         border-radius: 8px;
     }
+
     .md-card {
         width: 320px;
         height: fit-content;

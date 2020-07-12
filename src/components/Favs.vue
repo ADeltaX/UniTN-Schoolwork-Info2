@@ -3,55 +3,51 @@
         <div v-if="busy" style="position: absolute; width: 100%; z-index: 100;">
             <md-progress-bar class="md-accent" md-mode="indeterminate"></md-progress-bar>
         </div>
-        <div v-else>
-            <div v-bind:class="[(favs.length == 0 || !user.loggedIn) ? 'centered-container' : '']">
-                <md-empty-state v-if="!user.loggedIn"
-                    md-icon="favorite"
-                    md-label="Login to see your favourites!"
-                    md-description="By logging in, you'll be able to handle your favourites.">
-                    <md-button class="md-primary md-raised" @click="goTo('login')">Login</md-button>
-                </md-empty-state>
+        <div v-else v-bind:class="[(favs.length == 0 || !user.loggedIn) ? 'centered-container' : '']">
+            <md-empty-state v-if="!user.loggedIn"
+                md-icon="favorite"
+                md-label="Login to see your favourites!"
+                md-description="By logging in, you'll be able to handle your favourites.">
+                <md-button class="md-primary md-raised" @click="goTo('login')">Login</md-button>
+            </md-empty-state>
 
-                <md-empty-state v-else-if="favs.length == 0"
-                    md-icon="favorite"
-                    md-label="No favourites yet!"
-                    md-description="This page feels empty without your favourite games :(">
-                </md-empty-state>
-            </div>
-            
-            <div v-if="!busy && user.loggedIn" class="flex-container" style="margin-bottom: 24px">
-                <div v-for="game in games"
-                    :key="game.id">
-                    <md-card md-with-hover @click.native="getGame(game.id, game.slug)">
-                        <md-card-media-cover md-solid>
-                            <md-card-media md-big>
-                                <div class="container" :style='{ backgroundImage: "url(" + game.background_image + ")", }'></div>
-                            </md-card-media>
-                            <md-card-area>
-                                <md-card-header>
-                                    <span class="md-title">{{game.name}}</span>
-                                </md-card-header>
-                                <md-card-actions>
-                                    <span>
-                                        <md-button
-                                                class="md-icon-button"
-                                                @click.stop="remFavs(game.id, user.data.email, games.indexOf(game))">
-                                            <md-icon>delete</md-icon>
-                                        </md-button>
-                                    </span>
-                                </md-card-actions>
-                            </md-card-area>
-                        </md-card-media-cover>
-                    </md-card>
-                </div>
-            </div>
-
-            <md-snackbar :md-active.sync="showSnackbar">
-                <span>{{msg}}</span>
-            </md-snackbar>
-                <!--    <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
-                </div>-->
+            <md-empty-state v-else-if="favs.length == 0"
+                md-icon="favorite"
+                md-label="No favourites yet!"
+                md-description="This page feels empty without your favourite games :(">
+            </md-empty-state>
+                <!-- <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
+                </div> -->
         </div>
+        
+        <div v-if="!busy && user.loggedIn" class="flex-container" style="margin-bottom: 24px">
+            <md-card md-with-hover v-for="game in games"
+            :key="game.id">
+                <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
+                    <md-card-media md-big>
+                        <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
+                    </md-card-media>
+                    <md-card-area>
+                        <md-card-header>
+                            <span class="md-title">{{game.name}}</span>
+                        </md-card-header>
+                        <md-card-actions>
+                            <span>
+                                <md-button
+                                        class="md-icon-button"
+                                        @click.stop="remFavs(game.id, user.data.email, games.indexOf(game))">
+                                    <md-icon>delete</md-icon>
+                                </md-button>
+                            </span>
+                        </md-card-actions>
+                    </md-card-area>
+                </md-card-media-cover>
+            </md-card>
+        </div>
+
+        <md-snackbar :md-active.sync="showSnackbar">
+            <span>{{msg}}</span>
+        </md-snackbar>
     </div>
 </template>
 <script>
@@ -89,6 +85,14 @@
         },
 
         methods: {
+            getResizedImage(url, size = 640){
+                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
+                if (url == null) //Capita che il server risponda con null
+                    return null;
+
+                return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
+            },
+
             getGame(id, slug) {
                 ls("gameId",id)
                 ls("gameSlug",slug)
@@ -159,40 +163,3 @@
         }
     };
 </script>
-
-<style scoped>
-    .centered-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        height: 100% !important;
-    }
-    .md-app {
-        max-height: 250px;
-        border: 1px solid rgba(#000, .12);
-    }
-
-    .md-card {
-        width: 450px;
-        height: 300px;
-        margin: 16px;
-        display: inline-block;
-        vertical-align: top;
-        border-radius: 8px;
-    }
-
-    .container {
-        width: 450px;
-        height: 300px;
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: 50% 50%;
-        border-radius: 8px;
-    }
-
-    .md-card-area {
-        backdrop-filter: blur(32px);
-        border-radius: 0 0 8px 8px;
-    }
-</style>

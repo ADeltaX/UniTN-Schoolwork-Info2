@@ -133,6 +133,10 @@
                 this.page++;
                 const axios = require("axios");
                 let url;
+                if(this.$route.params.id == null && ls("publisherId")== null)
+                {
+                    this.$router.replace({name:"home"})
+                }
                 if(this.$route.params.id != null)
                     url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&publishers=").concat(this.$route.params.id);
                 else

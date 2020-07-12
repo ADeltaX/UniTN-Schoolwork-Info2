@@ -33,24 +33,24 @@
                         </md-card-content>
                     </md-card-content>
                     <md-card-actions>
-                        <template>
-                            <md-icon>thumb_up</md-icon>
-                            {{rev.upvotes}}
-                        </template>
+                        <!--   <template>
+                               <md-icon>thumb_up</md-icon>
+                               {{rev.upvotes}}
+                           </template>
 
-                        <md-icon>thumb_down</md-icon>
-                        {{rev.downvotes}}
+                           <md-icon>thumb_down</md-icon>
+                           {{rev.downvotes}} -->
 
-                        <md-button class="md-icon-button">{{rev.rating}}</md-button>
-                        <md-button
-                                class="md-icon-button"
-                                @click.stop="remRev(rev['game-id'],user.data.email,revs.indexOf(rev))">
-                            <md-icon>delete</md-icon>
-                        </md-button>
-                    </md-card-actions>
-                </div>
-                <!-- <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
-                    </div> -->
+                           <md-button class="md-icon-button">{{rev.rating}}</md-button>
+                           <md-button
+                                   class="md-icon-button"
+                                   @click.stop="remRev(rev['game-id'],user.data.email,revs.indexOf(rev))">
+                               <md-icon>delete</md-icon>
+                           </md-button>
+                       </md-card-actions>
+                   </div>
+                   <!-- <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
+                       </div> -->
             </div>
         </div>
     </div>

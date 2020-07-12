@@ -132,9 +132,12 @@
         <md-card  v-for="rev in reviews"
                  :key="rev.id">
             <md-card-header>
-                <span class="md-title">
+                <p class="md-title">
+                        <i >{{rev.username}}</i>
+                    </p>
+                <p class="md-title">
                         {{rev.title}}
-                    </span>
+                    </p>
             </md-card-header>
             <md-card-content >
 
@@ -167,14 +170,16 @@
                 review: {
                     title: "",
                     score: 60,
-                    text: ""
+                    text: "",
+                    username:""
                 },
                 rexists: false, //se la review dell'utente esiste o meno
                 reviews: [],
                 busy: false,
                 page: 0,
                 gid: this.$route.params.id,
-                error: null
+                error: null,
+
 
             };
         },
@@ -357,6 +362,18 @@
                     console.log(doc);
                     if (!doc.empty) {
                        self.reviews = doc.docs.map(doc => doc.data());
+                       //aggiungo lo username alle reviews
+                        self.reviews.forEach(function (element) {
+                            db.collection("users").doc(element["user-id"]).get().then(
+                                function(doc) {
+                                    let data =doc.data();
+                                    element.username = data['username'];
+                                    self.$forceUpdate()
+                                }
+                            )
+
+                        });
+
                        self.page +=10;
                        self.busy = false;
                        console.log(self.reviews)

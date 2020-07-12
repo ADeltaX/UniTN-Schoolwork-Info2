@@ -133,7 +133,7 @@
                  :key="rev.id">
             <md-card-header>
                 <p class="md-title">
-                        <i >{{rev.username}}</i>
+                        <i {{rev.username}}></i>
                     </p>
                 <p class="md-title">
                         {{rev.title}}

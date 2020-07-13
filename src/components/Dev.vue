@@ -34,7 +34,6 @@
 </template>
 
 <script>
-
     import {mapGetters} from "vuex";
     import "@firebase/app";
     import firebase from "@firebase/app";
@@ -83,18 +82,18 @@
                 }
             },
 
-            goBack: function() {
+            goBack() {
                 this.$router.back();
             },
 
-            checkFavs(gameId, userId,elementId) {
+            checkFavs(gameId, userId, elementId) {
                 let id = "".concat(userId).concat('-').concat(gameId);
                 let self = this;
                 let db = firebase.firestore();
                 //controlliamo se è già inserito
                 db.collection("favourites").doc(id)
                     .get().then(function (ris) {
-                    self.dev[elementId].user_game =ris.exists;
+                    self.dev[elementId].user_game = ris.exists;
                 }).catch(function (error) {
                     console.error("Error reading document: ", error);
                 });
@@ -104,7 +103,7 @@
                 let id = "".concat(userId).concat("-").concat(gameId);
                 let db = firebase.firestore();
                 this.checkFavs(gameId, userId,elementId);
-                let self=this;
+                let self = this;
 
                 if(this.dev[elementId].user_game)
                 {
@@ -139,9 +138,12 @@
 
                 axios.get(url).then((response) => {
                     this.dev = this.dev.concat(response.data.results);
-                    this.dev.forEach(el => {
-                        this.checkFavs(el.id,this.user.data.email,this.dev.indexOf(el))
-                    });
+                    if (this.user.loggedIn) {
+                        this.dev.forEach(el => {
+                            this.checkFavs(el.id, this.user.data.email, this.dev.indexOf(el));
+                        });
+                    }
+                    
                     this.$g.pageLoading = false;
                     
                     if (response.data.next == null)

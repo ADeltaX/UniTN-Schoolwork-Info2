@@ -34,12 +34,9 @@
             })
         },
 
-        data: function() {
+        data() {
             return {
                 devs: [],
-                offset: 0,
-                showSnackbarTrue: false,
-                showSnackbarFalse: false,
                 page: 1,
                 canLoadMore: true
             };
@@ -50,10 +47,10 @@
         },
 
         methods: {
-            getResizedImage(url, size = 640){
-                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
-                if (url == null) //Capita che il server risponda con null
-                    return null;
+            getResizedImage(url, size = 640) {
+                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080/3840x2160 per un lag garantito
+                if (url == null) //Capita che il server risponda con null perché non ha l'immagine
+                    return ""; //ritorniamo vuoto (oppure con un url di default)
 
                 return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
             },
@@ -65,7 +62,7 @@
                 this.$g.pageLoading = true;
                 this.page++;
                 const axios = require("axios");
-                let url="https://api.rawg.io/api/developers?page_size=20&page=".concat(this.page);
+                let url = "https://api.rawg.io/api/developers?page_size=20&page=".concat(this.page);
                 axios.get(url).then((response) => {
                     this.devs = this.devs.concat(response.data.results);
                     this.$g.pageLoading = false;

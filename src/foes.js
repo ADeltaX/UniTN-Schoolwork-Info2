@@ -5,6 +5,9 @@
              name: x
          });
      },
+     goSpecific(router,x) {
+         router.push(x);
+     },
      goBack(router)
      {
          router.back();

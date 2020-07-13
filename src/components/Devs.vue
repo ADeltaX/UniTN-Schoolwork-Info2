@@ -5,11 +5,11 @@
         </div>
         <div class="flex-container">
             <md-card md-with-hover v-for="game in devs"
-                :key="game.id">
+                     :key="game.id">
                 <router-link :to="`/dev/${game.id}/`">
                     <md-card-media-cover md-solid>
                         <md-card-media md-big>
-                            <div class="img-container" :style='{ backgroundImage: "url(" + self.getResizedImage(game.image_background) + ")", }'></div>
+                            <div class="img-container" :style='{ backgroundImage: "url(" + foes.getResizedImage(game.image_background) + ")", }'></div>
                         </md-card-media>
                         <md-card-area>
                             <md-card-header>
@@ -65,11 +65,11 @@
                     if (response.data.next == null)
                         this.canLoadMore = false;
                 })
-                .catch((error) => {
-                    this.page--;
-                    this.$g.pageLoading = false;
-                    console.log(error);
-                });
+                    .catch((error) => {
+                        this.page--;
+                        this.$g.pageLoading = false;
+                        console.log(error);
+                    });
                 this.$forceUpdate();
             }
         }

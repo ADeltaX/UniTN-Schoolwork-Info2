@@ -118,7 +118,6 @@
                 </template>
             </md-card-content>
             <md-card-actions>
-                <md-button class="md-raised" type="reset">RESET</md-button>
                 <md-button class="md-raised" @click="update(user.data.email,game.id)" v-if="rexists">UPDATE</md-button>
                 <md-button class="md-raised" @click="submit(user.data.email,game.id)" v-else>SUBMIT</md-button>
             </md-card-actions>
@@ -306,6 +305,15 @@
                     return;
 
                 }
+                if(this.review.title.length > 30 || this.review.text.length > 500)
+                {
+                    this.showSnackbar = true;
+                    this.error="Titolo e descrizione non devono superare le dimensioni indicate";
+                    console.error("Errore titolo e descrizione")
+
+                    return;
+
+                }
                 if(this.review.score <= 0|| this.review.score > 100)
                 {
                     this.showSnackbar = true;
@@ -385,7 +393,7 @@
 </script>
 <style lang="scss" scoped>
     .md-card {
-        width: 320px;
+        width: fit-content;
         height: fit-content;
         margin: 4px;
         display: inline-block;

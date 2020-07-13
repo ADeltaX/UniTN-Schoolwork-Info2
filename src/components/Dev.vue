@@ -93,12 +93,14 @@
                 }).catch(function (error) {
                     console.error("Error reading document: ", error);
                 });
+
             },
 
             addFavs(gameId, userId,elementId) {
                 let id = "".concat(userId).concat("-").concat(gameId);
                 let db = firebase.firestore();
                 this.checkFavs(gameId, userId,elementId);
+               // console.log(this.dev)
                 let self = this;
 
                 if(this.dev[elementId].user_game)
@@ -148,7 +150,7 @@
                 .catch((error) => {
                     if (error.response) {
                         //Let's suppose it's a 404 (we may have a gateway error, auth error, etc.... but that's not a problem for the moment)
-                        this.$router.replace({ name: "notFound" });
+                       // this.$router.replace({ name: "notFound" });
                     }
 
                     this.page--;

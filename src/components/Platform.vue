@@ -28,7 +28,7 @@
                     </md-card-media-cover>
                 </router-link>
             </md-card>
-            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="400"></div>
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="10"></div>
         </div>
     </div>
 </template>
@@ -88,26 +88,36 @@
                 axios.get(url).then((response) => {
                     this.games = this.games.concat(response.data.results);
                     if (this.user.loggedIn) {
-                        this.dev.forEach(el => {
-                            this.checkFavs(el.id, this.user.data.email, this.dev.indexOf(el));
+                        //console.log(this.games)
+                        this.games.forEach(el => {
+                            this.checkFavs(el.id, this.user.data.email, this.games.indexOf(el));
                         });
                     }
 
                     this.$g.pageLoading = false;
 
+                   // console.log(response)
+                    console.log(this.canLoadMore)
                     if (response.data.next == null)
                         this.canLoadMore = false;
+
+                   // this.$forceUpdate()
+
+
                 })
                 .catch((error)=>{
                     if (error.response) {
                         //Let's suppose it's a 404 (we may have a gateway error, auth error, etc.... but that's not a problem for the moment)
-                        this.$router.replace({ name: "notFound" });
+                        //this.$router.replace({ name: "notFound" });  no m8
+
                     }
 
                     this.page--;
                     console.log(error);
                     this.$g.pageLoading = false;
+                    //console.log(self.games)
                 });
+                console.log(this.games)
                 this.$forceUpdate();
             },
 

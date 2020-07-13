@@ -94,6 +94,7 @@
                 //controlliamo se è già inserito
                 db.collection("favourites").doc(id)
                     .get().then(function (ris) {
+                       // console.log("I'm here")
                     self.pub[elementId].user_game =ris.exists;
                 }).catch(function (error) {
                     console.error("Error reading document: ", error);
@@ -141,9 +142,12 @@
 
                 axios.get(url).then((response) => {
                     this.pub = this.pub.concat(response.data.results);
+                    //console.log(this.user.loggedIn)
                     if (this.user.loggedIn) {
-                        this.dev.forEach(el => {
-                            this.checkFavs(el.id, this.user.data.email, this.dev.indexOf(el));
+
+                        this.pub.forEach(el => {
+                           // console.log(this.user.loggedIn)
+                            this.checkFavs(el.id, this.user.data.email, this.pub.indexOf(el));
                         });
                     }
                     this.$g.pageLoading = false;
@@ -154,7 +158,7 @@
                 .catch((error) => {
                     if (error.response) {
                         //Let's suppose it's a 404 (we may have a gateway error, auth error, etc.... but that's not a problem for the moment)
-                        this.$router.replace({ name: "notFound" });
+                       // this.$router.replace({ name: "notFound" });
                     }
 
                     this.page--;

@@ -19,6 +19,8 @@
                 :key="rev.id">
                 <md-card-header>
                     <span class="md-title">
+                         {{rev.gameName}}
+                        -
                         {{rev.title}}
                     </span>
                 </md-card-header>
@@ -28,12 +30,23 @@
                     </md-card-content>
                 </md-card-content>
                 <md-card-actions>
-                        <md-button class="md-icon-button">{{rev.rating}}</md-button>
+                    <!-- debug
+                    <md-button
+                            class="md-icon-button"
+                            @click.stop="debug()">
+                        <md-icon>info</md-icon>
+                    </md-button>  -->
+                    <md-button class="md-icon-button">{{rev.rating}}</md-button>
                             <md-button
                                 class="md-icon-button"
                                 @click.stop="remRev(rev['game-id'],user.data.email,revs.indexOf(rev))">
                             <md-icon>delete</md-icon>
                         </md-button>
+                    <md-button
+                            class="md-icon-button"
+                            @click.stop="foes.goSpecific($router,{name:'game',params:{id:rev['game-id']}})">
+                        <md-icon>arrow_forward</md-icon>
+                    </md-button>
                     </md-card-actions>
                 </div>
                 <!-- <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this$g.pageLoading" infinite-scroll-distance="10" >
@@ -69,10 +82,15 @@
             console.clear();
             if (this.user.loggedIn)
                 this.load(this.user.data.email);
+
             this.$forceUpdate();
         },
 
         methods: {
+
+            debug(){
+              console.log(this.revs);
+            },
 
             load(userId) {
                 this.$g.pageLoading = true;
@@ -82,8 +100,26 @@
                     //  console.log(doc);
                     if (!doc.empty) {
                         self.revs = doc.docs.map(doc => doc.data());
+
+                        //aggiungo il titolo del gioco alle reviews
+                        self.revs.forEach(function (element) {
+                            const axios = require("axios");
+                            let url = "https://api.rawg.io/api/games/".concat(element['game-id']);
+                            axios.get(url).then((response) => {
+                                //console.log(response);
+                                element.gameName = response.data.name;
+                                self.$forceUpdate()
+
+                            });
+                        })
+
+
                         self.$g.pageLoading = false;
-                    } else {
+
+                      //  console.log(self.revs);
+                      }
+                    else
+                        {
                         self.$g.pageLoading = false;
                         console.log("No reviews");
                     }
@@ -91,6 +127,7 @@
                     self.$g.pageLoading = false;
                     console.log("Error getting document:", error);
                 });
+
             },
 
             remRev(gameId, userId,elementId) {
@@ -114,3 +151,12 @@
         }
     };
 </script>
+<style lang="scss" scoped>
+    .md-card {
+        width: fit-content;
+        height: fit-content;
+        margin: 4px;
+        display: inline-block;
+        vertical-align: top;
+    }
+</style>

@@ -87,9 +87,11 @@
 
                 axios.get(url).then((response) => {
                     this.games = this.games.concat(response.data.results);
-                    this.games.forEach(el => {
-                        this.checkFavs(el.id,this.user.data.email,this.games.indexOf(el))
-                    });
+                    if (this.user.loggedIn) {
+                        this.dev.forEach(el => {
+                            this.checkFavs(el.id, this.user.data.email, this.dev.indexOf(el));
+                        });
+                    }
 
                     this.$g.pageLoading = false;
 

@@ -35,7 +35,7 @@
             })
         },
 
-        data: function() {
+        data() {
             return {
                 devs: [],
                 page: 1,
@@ -57,7 +57,7 @@
                 this.$g.pageLoading = true;
                 this.page++;
                 const axios = require("axios");
-                let url="https://api.rawg.io/api/developers?page_size=20&page=".concat(this.page);
+                let url = "https://api.rawg.io/api/developers?page_size=20&page=".concat(this.page);
                 axios.get(url).then((response) => {
                     this.devs = this.devs.concat(response.data.results);
                     this.$g.pageLoading = false;

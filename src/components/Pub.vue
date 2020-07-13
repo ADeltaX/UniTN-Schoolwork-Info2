@@ -137,14 +137,15 @@
                 const axios = require("axios");
                 let url;
 
-                if(this.$route.params.id != null)
-                    url = "https://api.rawg.io/api/games?page=".concat(this.page).concat("&publishers=").concat(this.$route.params.id);
+                url = "https://api.rawg.io/api/games?page=".concat(this.page).concat("&publishers=").concat(this.$route.params.id);
 
                 axios.get(url).then((response) => {
                     this.pub = this.pub.concat(response.data.results);
-                    this.pub.forEach(el => {
-                        this.checkFavs(el.id, this.user.data.email, this.pub.indexOf(el))
-                    });
+                    if (this.user.loggedIn) {
+                        this.dev.forEach(el => {
+                            this.checkFavs(el.id, this.user.data.email, this.dev.indexOf(el));
+                        });
+                    }
                     this.$g.pageLoading = false;
 
                     if (response.data.next == null)

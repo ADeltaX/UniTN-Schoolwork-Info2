@@ -9,7 +9,7 @@
                 <router-link :to="`/dev/${game.id}/`">
                     <md-card-media-cover md-solid>
                         <md-card-media md-big>
-                            <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.image_background) + ")", }'></div>
+                            <div class="img-container" :style='{ backgroundImage: "url(" + self.getResizedImage(game.image_background) + ")", }'></div>
                         </md-card-media>
                         <md-card-area>
                             <md-card-header>
@@ -26,6 +26,7 @@
 </template>
 <script>
     import { mapGetters } from "vuex";
+    import foes from "../foes"
     export default {
         computed: {
             // mappa `this.user` a `this.$store.getters.user`
@@ -37,11 +38,9 @@
         data: function() {
             return {
                 devs: [],
-                offset: 0,
-                showSnackbarTrue: false,
-                showSnackbarFalse: false,
                 page: 1,
-                canLoadMore: true
+                canLoadMore: true,
+                foes
             };
         },
 
@@ -50,13 +49,6 @@
         },
 
         methods: {
-            getResizedImage(url, size = 640){
-                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
-                if (url == null) //Capita che il server risponda con null
-                    return null;
-
-                return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
-            },
 
             loadMore() {
                 if (!this.canLoadMore)

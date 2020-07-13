@@ -9,7 +9,7 @@
                 <router-link :to="`/game/${game.id}/`">
                     <md-card-media-cover md-solid>
                         <md-card-media md-big>
-                            <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
+                            <div class="img-container" :style='{ backgroundImage: "url(" + foes.getResizedImage(game.background_image) + ")", }'></div>
                         </md-card-media>
                         <md-card-area>
                             <md-card-header>
@@ -39,6 +39,7 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
+    import foes from "../foes"
 
     export default {
         data: function() {
@@ -46,7 +47,8 @@
                 dev: [],
                 devName: "",
                 page: 0,
-                canLoadMore: true
+                canLoadMore: true,
+                foes
             };
         },
         
@@ -63,28 +65,17 @@
         },
 
         methods: {
-            getResizedImage(url, size = 640){
-                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
-                if (url == null) //Capita che il server risponda con null
-                    return null;
-
-                return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
-            },
 
             async getDevName() {
                 let url = "https://api.rawg.io/api/developers/".concat(this.$route.params.id);
 
                 try {
                     const axios = require("axios");
-                    var response = await axios.get(url);
+                    let response = await axios.get(url);
                     this.devName = response.data.name;
                 } catch {
                     //Let's ignore this for the moment.
                 }
-            },
-
-            goBack: function() {
-                this.$router.back();
             },
 
             checkFavs(gameId, userId,elementId) {

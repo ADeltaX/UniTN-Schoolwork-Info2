@@ -1,13 +1,13 @@
 <template>
-    <div v-if="!this.$g.pageLoading" v-bind:class="[(revs.length == 0 || !user.loggedIn) ? 'centered-container' : '']">
+    <div v-if="!this.$g.pageLoading" v-bind:class="[(revs.length === 0 || !user.loggedIn) ? 'centered-container' : '']">
         <md-empty-state v-if="!user.loggedIn"
             md-icon="rate_review"
             md-label="Accedi per vedere le tue recensioni!"
             md-description="Accedendo potrai gestire le tue recensioni.">
-            <md-button class="md-primary md-raised" @click="goTo('login')">Login</md-button>
+            <md-button class="md-primary md-raised" @click="foes.goTo($router,'login')">Login</md-button>
         </md-empty-state>
 
-        <md-empty-state v-else-if="revs.length == 0"
+        <md-empty-state v-else-if="revs.length === 0"
             md-icon="rate_review"
             md-label="Nessuna recensione per ora!"
             md-description="Vai al tuo gioco preferito e recensiscilo!">
@@ -47,6 +47,7 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
+    import foes from "../foes.js"
 
     export default {
         computed: {
@@ -58,7 +59,9 @@
 
         data() {
             return {
-                revs: []
+                revs: [],
+                foes
+
             };
         },
 
@@ -70,6 +73,7 @@
         },
 
         methods: {
+
             load(userId) {
                 this.$g.pageLoading = true;
                 let self = this;
@@ -104,13 +108,9 @@
                 }).catch(function (error) {
                     console.error("Error removing review: ", error);
                 });
-            },
-
-            goTo(x) {
-                this.$router.push({
-                    name: x
-                });
             }
+
+
         }
     };
 </script>

@@ -4,17 +4,19 @@
             md-icon="cancel"
             md-label="404!"
             md-description="The page you are searching for doesn't exist anymore or contains errors.">
-            <md-button class="md-primary md-raised" @click="goHome()">Home</md-button>
+            <md-button class="md-primary md-raised" @click="foes.goTo($router,'home')">Home</md-button>
         </md-empty-state>
     </div>
 </template>
 
 <script>
+    import foes from "../foes"
     export default {
-        methods: {
-            goHome() {
-                this.$router.replace('/');
+        data(){
+            return{
+                foes
             }
         }
-    };
+    }
+
 </script>

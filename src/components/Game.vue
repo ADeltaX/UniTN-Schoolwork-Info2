@@ -85,7 +85,7 @@
             </md-card-content>
             <md-card-actions>
                 <!-- TODO: fixare il goBack -->
-                <md-button class="md-icon-button" @click="goBack()">
+                <md-button class="md-icon-button" @click="foes.goBack($router)">
                     <md-icon>fast_rewind</md-icon>
                 </md-button>
             </md-card-actions>
@@ -152,6 +152,7 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
+    import foes from "../foes"
 
     export default {
         data: function() {
@@ -169,6 +170,7 @@
                 page: 0,
                 gid: this.$route.params.id,
                 error: null,
+                foes
             };
         },
         computed: {
@@ -199,7 +201,7 @@
                 this.$router.replace({ name: "notFound" });
             });
 
-            this.$forceUpdate();
+           // this.$forceUpdate();
 
             if(this.user.loggedIn) {
                 let db = firebase.firestore();
@@ -212,7 +214,7 @@
                     this.$router.replace({ name: "notFound" });
 
                 let doc = db.collection("reviews").doc(id);
-                // console.log("this:");
+                //console.log("this:");
                 //console.log(this);
                 doc.get().then(function (doc) {
                     if (doc.exists) {
@@ -233,9 +235,6 @@
         },
         methods: {
 
-            goBack: function() {
-                this.$router.back();
-            },
 
             submit(userId,gameId){
                 let db = firebase.firestore();
@@ -343,8 +342,13 @@
                 else
                     this.$router.replace({ name: "notFound" });
 
-                db.collection("reviews").where("game-id", "==", id).limit(10).orderBy("upvotes").startAt(self.page).get().then(function(doc) {
-                    console.log(doc);
+               //  console.log(id);
+              //     console.log(self.page);
+             //    console.log(db.collection("reviews").where("game-id", "==", parseInt(id)).get())
+
+
+                db.collection("reviews").where("game-id", "==", parseInt(id)).limit(10).orderBy("upvotes").startAt(self.page).get().then(function(doc) {
+                    //console.log(doc);
                     if (!doc.empty) {
                        self.reviews = doc.docs.map(doc => doc.data());
                        //aggiungo lo username alle reviews

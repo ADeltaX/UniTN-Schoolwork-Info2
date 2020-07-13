@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 
-//import * as firebase from "firebase";
+//import foes from "./foes"
 import store from "./store";
 import router from "./routes/index";
 
@@ -21,7 +21,7 @@ Vue.prototype.$http = axios
 
 var shared = new Vue({
   data: { 
-    pageLoading: false 
+    pageLoading: false
   }
 });
 
@@ -37,6 +37,7 @@ import "@firebase/firestore";
 require('firebase/auth')
 
 new Vue({
+ // foes,
   router,
   store,
   render: h => h(App)

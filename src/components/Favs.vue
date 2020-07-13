@@ -4,7 +4,7 @@
             md-icon="favorite"
             md-label="Accedi per vedere i tuoi preferiti!"
             md-description="Accedendo potrai gestire i tuoi preferiti.">
-            <md-button class="md-primary md-raised" @click="goTo('login')">Login</md-button>
+            <md-button class="md-primary md-raised" @click="foes.goTo($router,'login')">Login</md-button>
         </md-empty-state>
 
         <md-empty-state v-else-if="favs.length == 0"
@@ -19,7 +19,7 @@
                     <router-link :to="`/game/${game.id}/`">
                         <md-card-media-cover>
                             <md-card-media md-big>
-                                <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
+                                <div class="img-container" :style='{ backgroundImage: "url(" + foes.getResizedImage(game.background_image) + ")", }'></div>
                             </md-card-media>
                             <md-card-area>
                                 <md-card-header>
@@ -51,6 +51,7 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
+    import foes from "../foes"
 
     export default {
         computed: {
@@ -66,7 +67,8 @@
                 games: [],
                 page: 0,
                 msg: "",
-                showSnackbar: false
+                showSnackbar: false,
+                foes
             };
         },
 
@@ -80,13 +82,6 @@
         },
 
         methods: {
-            getResizedImage(url, size = 640){
-                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
-                if (url == null) //Capita che il server risponda con null
-                    return null;
-
-                return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
-            },
 
             checkFavs(userId) {
                 this.$g.pageLoading = true;
@@ -143,10 +138,6 @@
                 }).catch(function (error) {
                     console.error("Error removing document: ", error);
                 });
-            },
-            
-            goTo(x) {
-                this.$router.push({ name: x });
             }
         }
     };

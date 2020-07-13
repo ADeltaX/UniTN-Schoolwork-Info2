@@ -19,6 +19,18 @@ Vue.use(infiniteScroll)
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
 
+var shared = new Vue({
+  data: { 
+    pageLoading: false 
+  }
+});
+
+shared.install = function(){
+  Object.defineProperty(Vue.prototype, '$g', {
+    get() { return shared }
+  });
+};
+Vue.use(shared);
 
 import "@firebase/app";
 import "@firebase/firestore";

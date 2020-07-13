@@ -38,58 +38,58 @@ const router = new Router({
             component: Home
         },
         {
-            path: '/Game/:slug',
+            path: '/game/:id',
             name: 'game',
             component: Game
         },
         {
-            path: '/Dev/:id/:slug',
+            path: '/dev/:id',
             name: 'dev',
             component: Dev
         },
         {
-            path: '/Devs/',
+            path: '/devs/',
             name: 'devs',
             component: Devs
         },
         {
-            path: '/Favs',
+            path: '/favs',
             name: 'favs',
             component: Favs
         },
         {
-            path: '/Platforms',
+            path: '/platforms',
             name: 'platforms',
             component: Platforms
         },
         {
-            path: '/Platform/:slug',
+            path: '/platform/:id',
             name: 'platform',
             component: Platform
         },
         {
-            path: '/Pub/:slug',
+            path: '/pub/:id',
             name: 'pub',
             component: Pub
         },
         {
-            path: '/Pubs',
+            path: '/pubs',
             name: 'pubs',
             component: Pubs
         },
         {
-            path: '/Reviews',
+            path: '/reviews',
             name: 'reviews',
             component: Reviews
         },
         {
-            path: '/Settings',
+            path: '/settings',
             name: 'user',
             component: User
         },
         {
             path: '*',
-            name: 'catchAll',
+            name: 'notFound',
             component: P404
         }
 

@@ -143,7 +143,7 @@
                 {{rev.rating}}
             </md-card-actions>
         </md-card>
-        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" ></div>
+        <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="10" ></div>
     </div>
 </template>
 
@@ -152,7 +152,6 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
-    import ls from "local-storage";
 
     export default {
         data: function() {
@@ -167,7 +166,6 @@
                 },
                 rexists: false, //se la review dell'utente esiste o meno
                 reviews: [],
-                busy: false,
                 page: 0,
                 gid: this.$route.params.id,
                 error: null,
@@ -184,19 +182,12 @@
             console.clear();
             const axios = require("axios");
 
-            // register, i.e. in a `mounted` hook
-         //   window.addEventListener('unload', this.onReload);
-
             let url;
-            if(this.$route.params.id == null && ls("gameId")== null)
-            {
-                this.$router.replace({name:"home"})
-            }
 
             if(this.$route.params.id != null)
-                url="https://api.rawg.io/api/games/".concat(this.$route.params.id);
+                url = "https://api.rawg.io/api/games/".concat(this.$route.params.id);
             else
-                url="https://api.rawg.io/api/games/".concat(ls("gameId").toString());
+                this.$router.replace({ name: "notFound" });
 
             console.log(url);
             axios.get(url).then((response)=>{
@@ -204,7 +195,8 @@
                 //console.log(response);
             })
             .catch((error)=>{
-                console.log(error)
+                console.log(error.response.status); //probably is a HTTP 404...
+                this.$router.replace({ name: "notFound" });
             });
 
             this.$forceUpdate();
@@ -213,10 +205,11 @@
                 let db = firebase.firestore();
                 let self = this;
                 let id;
+
                 if(this.$route.params.id != null)
                      id = this.user.data.email.concat("-").concat(this.$route.params.id)
                 else
-                    id = this.user.data.email.concat("-").concat(ls("gameId").toString());
+                    this.$router.replace({ name: "notFound" });
 
                 let doc = db.collection("reviews").doc(id);
                 // console.log("this:");
@@ -243,6 +236,7 @@
             goBack: function() {
                 this.$router.back();
             },
+
             submit(userId,gameId){
                 let db = firebase.firestore();
                 let id = userId.concat("-").concat(gameId);
@@ -296,6 +290,7 @@
                         console.error("Error writing document(review): ", error);
                     });
             },
+
             update(userId,gameId)
             {
                 let db = firebase.firestore();
@@ -335,18 +330,18 @@
                         console.error("Error updating review: ", error);
                     });
             },
+
             loadMore() {
                 //console.log("Adding more data results");
-                this.busy = true;
+                this.$g.pageLoading = true;
                 let db = firebase.firestore();
-                let self=this;
+                let self = this;
 
                 let id;
                 if(this.$route.params.id != null)
                     id = self.$route.params.id
                 else
-                    id = ls("gameId");
-
+                    this.$router.replace({ name: "notFound" });
 
                 db.collection("reviews").where("game-id", "==", id).limit(10).orderBy("upvotes").startAt(self.page).get().then(function(doc) {
                     console.log(doc);
@@ -364,15 +359,18 @@
 
                         });
 
-                       self.page +=10;
-                       self.busy = false;
+                       self.page += 10;
+                       self.$g.pageLoading = false;
                        console.log(self.reviews)
                     } else {
                         // doc.data() will be undefined in this case
                         console.log("No reviews");
+                        self.$g.pageLoading = false;
                     }
                 }).catch(function(error) {
                     console.log("Error getting document:", error);
+
+                    self.$g.pageLoading = false;
                 });
 
 

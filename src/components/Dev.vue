@@ -1,50 +1,34 @@
 <template>
     <div>
-        <div v-if="busy" style="position: absolute; width: 100%; z-index: 100;">
-            <md-progress-bar class="md-accent" md-mode="indeterminate"></md-progress-bar>
+        <div>
+            <h1 class="md-headline">Sviluppatore: {{ devName }}</h1>
         </div>
-        <div class="flex-container" style="margin-bottom: 24px">
+        <div class="flex-container">
             <md-card md-with-hover v-for="game in dev"
                 :key="game.id">
-                <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
-                    <md-card-media md-big>
-                        <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
-                    </md-card-media>
-                    <md-card-area>
-                        <md-card-header>
-                            <span class="md-title">{{game.name}}</span>
-                        </md-card-header>
-                        <md-card-actions v-if="user.loggedIn">
-                            <span>
-                                <md-button
-                                        class="md-icon-button"
-                                        @click.stop="addFavs(game.id, user.data.email, dev.indexOf(game))">
-                                    <md-icon>{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
-                                </md-button>
-                            </span>
-                        </md-card-actions>
-                    </md-card-area>
-                </md-card-media-cover>
+                <router-link :to="`/game/${game.id}/`">
+                    <md-card-media-cover md-solid>
+                        <md-card-media md-big>
+                            <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
+                        </md-card-media>
+                        <md-card-area>
+                            <md-card-header>
+                                <span class="md-title">{{game.name}}</span>
+                            </md-card-header>
+                            <md-card-actions v-if="user.loggedIn">
+                                <span>
+                                    <md-button
+                                            class="md-icon-button" @click.prevent
+                                            @click="addFavs(game.id, user.data.email, dev.indexOf(game))">
+                                        <md-icon>{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
+                                    </md-button>
+                                </span>
+                            </md-card-actions>
+                        </md-card-area>
+                    </md-card-media-cover>
+                </router-link>
             </md-card>
-            
-            <!-- TODO: SNACKBAR 1 SOLA VOLTA! -->
-
-            <!-- <md-snackbar
-                    md-position="center"
-                    :md-duration="1000"
-                    :md-active.sync="showSnackbarTrue"
-                    v-if="game.user_game === true">
-                <span>Inserted in favorites!</span>
-            </md-snackbar>
-            <md-snackbar
-                    md-position="center"
-                    :md-duration="1000"
-                    :md-active.sync="showSnackbarFalse"
-                    v-if="game.user_game === true">
-                <span>Remove from favorites!</span>
-            </md-snackbar> -->
-            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="400" >
-            </div>
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="400"></div>
         </div>
     </div>
 </template>
@@ -55,14 +39,13 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
-    import ls from "local-storage"
 
     export default {
         data: function() {
             return {
                 dev: [],
+                devName: "",
                 page: 0,
-                busy: false,
                 canLoadMore: true
             };
         },
@@ -74,10 +57,9 @@
             })
         },
 
-        created: function() {
+        async created() {
             console.clear();
-            this.loadMore();
-            this.$forceUpdate();
+            await this.getDevName();
         },
 
         methods: {
@@ -89,19 +71,25 @@
                 return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
             },
 
+            async getDevName() {
+                let url = "https://api.rawg.io/api/developers/".concat(this.$route.params.id);
+
+                try {
+                    const axios = require("axios");
+                    var response = await axios.get(url);
+                    this.devName = response.data.name;
+                } catch {
+                    //Let's ignore this for the moment.
+                }
+            },
+
             goBack: function() {
                 this.$router.back();
             },
 
-            getGame(id,slug) {
-                ls("gameId",id)
-                ls("gameSlug",slug)
-                this.$router.push({ name: 'game', params: { id,slug } })
-            },
-
             checkFavs(gameId, userId,elementId) {
                 let id = "".concat(userId).concat('-').concat(gameId);
-                let self=this;
+                let self = this;
                 let db = firebase.firestore();
                 //controlliamo se è già inserito
                 db.collection("favourites").doc(id)
@@ -144,63 +132,34 @@
                 if (!this.canLoadMore)
                     return;
 
-                this.busy = true;
+                this.$g.pageLoading = true;
                 this.page++;
                 const axios = require("axios");
-                let url;
-                if(this.$route.params.id == null && ls("developerId")== null)
-                {
-                    this.$router.replace({name:"home"})
-                }
-                if(this.$route.params.id != null)
-                    url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&developers=").concat(this.$route.params.id);
-                else
-                    url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&developers=").concat(ls("developerId").toString());
+                let url = "https://api.rawg.io/api/games?page=".concat(this.page).concat("&developers=").concat(this.$route.params.id);
 
                 axios.get(url).then((response) => {
                     this.dev = this.dev.concat(response.data.results);
                     this.dev.forEach(el => {
                         this.checkFavs(el.id,this.user.data.email,this.dev.indexOf(el))
                     });
-                    this.busy = false;
+                    this.$g.pageLoading = false;
                     
                     if (response.data.next == null)
                         this.canLoadMore = false;
                 })
                 .catch((error) => {
+                    if (error.response) {
+                        //Let's suppose it's a 404 (we may have a gateway error, auth error, etc.... but that's not a problem for the moment)
+                        this.$router.replace({ name: "notFound" });
+                    }
+
                     this.page--;
-                    this.busy = false;
+                    this.$g.pageLoading = false;
                     console.log(error);
                 });
 
                 this.$forceUpdate();
             }
-
         }
     };
 </script>
-
-<style scoped>
-  .md-card {
-    width: 450px;
-    height: 300px;
-    margin: 16px;
-    display: inline-block;
-    vertical-align: top;
-    border-radius: 8px;
-  }
-
-  .md-card-area {
-    backdrop-filter: blur(32px);
-    border-radius: 0 0 8px 8px;
-  }
-
-  .img-container {
-    width: 450px;
-    height: 300px;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    border-radius: 8px;
-  }
-</style>

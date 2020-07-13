@@ -1,32 +1,33 @@
 <template>
     <div>
-        <div v-if="busy" style="position: absolute; width: 100%; z-index: 100;">
-            <md-progress-bar class="md-accent" md-mode="indeterminate"></md-progress-bar>
+        <div>
+            <h1 class="md-headline">Tutti i giochi</h1>
         </div>
-        <div class="flex-container" style="margin-bottom: 24px">
+        <div class="flex-container">
             <md-card md-with-hover v-for="game in games"
                 :key="game.id">
-                <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
-                    <md-card-media md-big>
-                        <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
-                    </md-card-media>
-                    <md-card-area>
-                        <md-card-header>
-                            <span class="md-title">{{game.name}}</span>
-                        </md-card-header>
-                        <md-card-actions v-if="user.loggedIn">
-                            <span>
-                                <md-button class="md-icon-button"
-                                        @click.stop="addFavs(game.id, user.data.email, games.indexOf(game))">
-                                    <md-icon>{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
-                                </md-button>
-                            </span>
-                        </md-card-actions>
-                    </md-card-area>
-                </md-card-media-cover>
+                <router-link :to="`/game/${game.id}/`">
+                    <md-card-media-cover md-solid>
+                        <md-card-media md-big>
+                            <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
+                        </md-card-media>
+                        <md-card-area>
+                            <md-card-header>
+                                <span class="md-title">{{game.name}}</span>
+                            </md-card-header>
+                            <md-card-actions v-if="user.loggedIn">
+                                <span>
+                                    <md-button class="md-icon-button" @click.prevent
+                                            @click="addFavs(game.id, user.data.email, games.indexOf(game))">
+                                        <md-icon>{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
+                                    </md-button>
+                                </span>
+                            </md-card-actions>
+                        </md-card-area>
+                    </md-card-media-cover>
+                </router-link>
             </md-card>
-            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="400" >
-            </div>
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="400"></div>
         </div>
     </div>
 </template>
@@ -36,8 +37,6 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
-    import ls from "local-storage"
-
 
     export default {
         computed: {
@@ -50,15 +49,12 @@
             return {
                 games: [],
                 page: 0,
-                busy: false,
                 canLoadMore: true
             };
         },
         
         created() {
-          //  console.clear();
-            this.loadMore();
-            this.$forceUpdate();
+
         },
 
         methods: {
@@ -70,38 +66,34 @@
                 return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
             },
 
-            getGame(id,slug) {
-                ls("gameId",id)
-                ls("gameSlug",slug)
-                this.$router.push({ name: 'game', params: { id, slug } })
-            },
-
             loadMore() {
                 //console.log("Adding more data results");
                 if (!this.canLoadMore)
                     return;
 
-                this.busy = true;
+                this.$g.pageLoading = true;
 
                 this.page += 1;
                 const axios = require("axios");
-                let url="https://api.rawg.io/api/games?page=".concat(this.page);
+                let url = "https://api.rawg.io/api/games?page=".concat(this.page);
                 axios.get(url).then((response) => {
                     this.games = this.games.concat(response.data.results);
-                    this.games.forEach(el => {
-                        if (this.user.loggedIn)
-                            this.checkFavs(el.id, this.user.data.email, this.games.indexOf(el));
-                    });
 
-                    this.busy = false;
+                    if (this.user.loggedIn) {
+                        this.games.forEach(el => {
+                            this.checkFavs(el.id, this.user.data.email, this.games.indexOf(el));
+                        });
+                    }
 
                     if (response.data.next == null)
                         this.canLoadMore = false;
+
+                    this.$g.pageLoading = false;
                 })
                 .catch((error) => {
                     this.page--;
                     console.log(error);
-                    this.busy = false;
+                    this.$g.pageLoading = false;
                 });
                 this.$forceUpdate();
             },

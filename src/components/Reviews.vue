@@ -1,57 +1,43 @@
 <template>
-    <div style="position: relative; height: 100%">
-        <div v-if="busy" style="position: absolute; width: 100%; z-index: 100;">
-            <md-progress-bar class="md-accent" md-mode="indeterminate"></md-progress-bar>
-        </div>
-        <div v-else v-bind:class="[(revs.length == 0 || !user.loggedIn) ? 'centered-container' : '']">
-            <md-empty-state v-if="!user.loggedIn"
-                md-icon="rate_review"
-                md-label="Login to see your reviews!"
-                md-description="By logging in, you'll be able to write reviews and to edit them.">
-                <md-button class="md-primary md-raised" @click="goTo('login')">Login</md-button>
-            </md-empty-state>
+    <div v-if="!this.$g.pageLoading" v-bind:class="[(revs.length == 0 || !user.loggedIn) ? 'centered-container' : '']">
+        <md-empty-state v-if="!user.loggedIn"
+            md-icon="rate_review"
+            md-label="Accedi per vedere le tue recensioni!"
+            md-description="Accedendo potrai gestire le tue recensioni.">
+            <md-button class="md-primary md-raised" @click="goTo('login')">Login</md-button>
+        </md-empty-state>
 
-            <md-empty-state v-else-if="revs.length == 0"
-                md-icon="rate_review"
-                md-label="No reviews yet!"
-                md-description="Go to your favourite game a write a good review about it :)">
-            </md-empty-state>
+        <md-empty-state v-else-if="revs.length == 0"
+            md-icon="rate_review"
+            md-label="Nessuna recensione per ora!"
+            md-description="Vai al tuo gioco preferito e recensiscilo!">
+        </md-empty-state>
 
-            <div v-else-if="!busy" class="md-layout md-gutter"  style="margin-bottom: 56px">
-                <div
-                    class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
-                    v-for="rev in revs"
-                    :key="rev.id">
-                    <md-card-header>
-                        <span class="md-title">
-                            {{rev.title}}
-                        </span>
-                    </md-card-header>
-                    <md-card-content v-if="user.loggedIn">
-                        <md-card-content>
-                            {{rev.text}}
-                        </md-card-content>
+        <div v-else-if="!this.$g.pageLoading" style="margin-bottom: 56px">
+            <div class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
+                v-for="rev in revs"
+                :key="rev.id">
+                <md-card-header>
+                    <span class="md-title">
+                        {{rev.title}}
+                    </span>
+                </md-card-header>
+                <md-card-content v-if="user.loggedIn">
+                    <md-card-content>
+                        {{rev.text}}
                     </md-card-content>
-                    <md-card-actions>
-                        <!--   <template>
-                               <md-icon>thumb_up</md-icon>
-                               {{rev.upvotes}}
-                           </template>
-
-                           <md-icon>thumb_down</md-icon>
-                           {{rev.downvotes}} -->
-
-                           <md-button class="md-icon-button">{{rev.rating}}</md-button>
-                           <md-button
-                                   class="md-icon-button"
-                                   @click.stop="remRev(rev['game-id'],user.data.email,revs.indexOf(rev))">
-                               <md-icon>delete</md-icon>
-                           </md-button>
-                       </md-card-actions>
-                   </div>
-                   <!-- <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
-                       </div> -->
-            </div>
+                </md-card-content>
+                <md-card-actions>
+                        <md-button class="md-icon-button">{{rev.rating}}</md-button>
+                            <md-button
+                                class="md-icon-button"
+                                @click.stop="remRev(rev['game-id'],user.data.email,revs.indexOf(rev))">
+                            <md-icon>delete</md-icon>
+                        </md-button>
+                    </md-card-actions>
+                </div>
+                <!-- <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this$g.pageLoading" infinite-scroll-distance="10" >
+                    </div> -->
         </div>
     </div>
 </template>
@@ -72,8 +58,7 @@
 
         data() {
             return {
-                revs: [],
-                busy: false
+                revs: []
             };
         },
 
@@ -86,20 +71,20 @@
 
         methods: {
             load(userId) {
-                this.busy = true;
+                this.$g.pageLoading = true;
                 let self = this;
                 let db = firebase.firestore();
                 db.collection("reviews").where("user-id", "==", userId).get().then(function(doc) {
                     //  console.log(doc);
                     if (!doc.empty) {
                         self.revs = doc.docs.map(doc => doc.data());
-                        self.busy = false;
+                        self.$g.pageLoading = false;
                     } else {
-                        self.busy = false;
+                        self.$g.pageLoading = false;
                         console.log("No reviews");
                     }
                 }).catch(function(error) {
-                    self.busy = false;
+                    self.$g.pageLoading = false;
                     console.log("Error getting document:", error);
                 });
             },
@@ -129,28 +114,3 @@
         }
     };
 </script>
-
-<style scoped>
-    .md-app {
-        max-height: 250px;
-        border: 1px solid rgba(#000, .12);
-    }
-
-    .container {
-        width: 450px;
-        height: 300px;
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: 50% 50%;
-        border-radius: 8px;
-    }
-
-    .md-card {
-        width: 320px;
-        height: fit-content;
-        margin: 4px;
-        display: inline-block;
-        vertical-align: top;
-    }
-</style>
-

@@ -1,50 +1,45 @@
 <template>
-    <div style="position: relative; height: 100%">
-        <div v-if="busy" style="position: absolute; width: 100%; z-index: 100;">
-            <md-progress-bar class="md-accent" md-mode="indeterminate"></md-progress-bar>
-        </div>
-        <div v-else v-bind:class="[(favs.length == 0 || !user.loggedIn) ? 'centered-container' : '']">
-            <md-empty-state v-if="!user.loggedIn"
-                md-icon="favorite"
-                md-label="Login to see your favourites!"
-                md-description="By logging in, you'll be able to handle your favourites.">
-                <md-button class="md-primary md-raised" @click="goTo('login')">Login</md-button>
-            </md-empty-state>
+    <div v-if="!this.$g.pageLoading" v-bind:class="[(favs.length == 0 || !user.loggedIn) ? 'centered-container' : '']">
+        <md-empty-state v-if="!user.loggedIn"
+            md-icon="favorite"
+            md-label="Accedi per vedere i tuoi preferiti!"
+            md-description="Accedendo potrai gestire i tuoi preferiti.">
+            <md-button class="md-primary md-raised" @click="goTo('login')">Login</md-button>
+        </md-empty-state>
 
-            <md-empty-state v-else-if="favs.length == 0"
-                md-icon="favorite"
-                md-label="No favourites yet!"
-                md-description="This page feels empty without your favourite games :(">
-            </md-empty-state>
-                <!-- <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" >
-                </div> -->
+        <md-empty-state v-else-if="favs.length == 0"
+            md-icon="favorite"
+            md-label="Nessun preferito!"
+            md-description="Questa pagina è vuota senza i tuoi giochi preferiti :(">
+        </md-empty-state>
+        <div>
+            <div v-if="!this.$g.pageLoading && user.loggedIn" class="flex-container" style="margin-bottom: 24px">
+                <md-card md-with-hover v-for="game in games"
+                :key="game.id">
+                    <router-link :to="`/game/${game.id}/`">
+                        <md-card-media-cover>
+                            <md-card-media md-big>
+                                <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
+                            </md-card-media>
+                            <md-card-area>
+                                <md-card-header>
+                                    <span class="md-title">{{game.name}}</span>
+                                </md-card-header>
+                                <md-card-actions>
+                                    <span>
+                                        <md-button
+                                                class="md-icon-button" @click.prevent
+                                                @click="remFavs(game.id, user.data.email, games.indexOf(game))">
+                                            <md-icon>delete</md-icon>
+                                        </md-button>
+                                    </span>
+                                </md-card-actions>
+                            </md-card-area>
+                        </md-card-media-cover>
+                    </router-link>
+                </md-card>
+            </div>
         </div>
-        
-        <div v-if="!busy && user.loggedIn" class="flex-container" style="margin-bottom: 24px">
-            <md-card md-with-hover v-for="game in games"
-            :key="game.id">
-                <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
-                    <md-card-media md-big>
-                        <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
-                    </md-card-media>
-                    <md-card-area>
-                        <md-card-header>
-                            <span class="md-title">{{game.name}}</span>
-                        </md-card-header>
-                        <md-card-actions>
-                            <span>
-                                <md-button
-                                        class="md-icon-button"
-                                        @click.stop="remFavs(game.id, user.data.email, games.indexOf(game))">
-                                    <md-icon>delete</md-icon>
-                                </md-button>
-                            </span>
-                        </md-card-actions>
-                    </md-card-area>
-                </md-card-media-cover>
-            </md-card>
-        </div>
-
         <md-snackbar :md-active.sync="showSnackbar">
             <span>{{msg}}</span>
         </md-snackbar>
@@ -56,7 +51,6 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
-    import ls from "local-storage"
 
     export default {
         computed: {
@@ -71,7 +65,6 @@
                 favs: [],
                 games: [],
                 page: 0,
-                busy: false,
                 msg: "",
                 showSnackbar: false
             };
@@ -81,6 +74,8 @@
             console.clear();
             if (this.user.loggedIn)
                 this.checkFavs(this.user.data.email);
+            else
+                this.$g.pageLoading = false;
             this.$forceUpdate();
         },
 
@@ -93,14 +88,8 @@
                 return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
             },
 
-            getGame(id, slug) {
-                ls("gameId",id)
-                ls("gameSlug",slug)
-                this.$router.push({ name: 'game', params: { id, slug } })
-            },
-
             checkFavs(userId) {
-                this.busy = true;
+                this.$g.pageLoading = true;
                 let self = this;
                 let db = firebase.firestore();
                 //console.log(userId);
@@ -110,7 +99,7 @@
                     if (!doc.empty) {
                         self.favs = doc.docs.map(doc => doc.data());
                        // self.page +=10;
-                        self.busy = false;
+                        self.$g.pageLoading = false;
                        // console.log("log self.favs");
                        // console.log(self.favs);
                         const axios = require("axios");
@@ -126,14 +115,13 @@
                                 console.log(error);
                             })
                         });
-                        self.busy=false;
                     } else {
                         console.log("No games");
-                        self.busy=false;
+                        self.$g.pageLoading = false;
                     }
                 }).catch(function(error) {
                     console.log("Error getting document:", error);
-                    self.busy=false;
+                    self.$g.pageLoading = false;
                 });
             },
 
@@ -147,7 +135,7 @@
                     self.showSnackbar = false;
                     self.showSnackbar = true;
                     
-                    self.msg = "Removed from favourites!";
+                    self.msg = "Rimosso dai preferiti!";
 
                     self.games.splice(elementId,1); // cancella il gioco dall'array
                     self.favs.splice(elementId,1);

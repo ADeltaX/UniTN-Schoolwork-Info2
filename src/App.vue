@@ -15,14 +15,14 @@
           </md-autocomplete> -->
           <div v-if="loaded" class="md-toolbar-section-end">
             <md-button @click="logout" v-if="user.loggedIn">
-              Logout
+              Esci
             </md-button>
             <template v-else>
               <md-button @click="goTo('login')" >
-                Login
+                Accedi
               </md-button>
               <md-button @click="goTo('register')">
-                Register
+                Registrati
               </md-button>
             </template>
           </div>
@@ -52,43 +52,46 @@
           <router-link :to="{ name: 'reviews'}">
             <md-list-item @click="closeDrawer()">
               <md-icon>rate_review</md-icon>
-              <span class="md-list-item-text">Reviews</span>
+              <span class="md-list-item-text">Recensioni</span>
             </md-list-item>
           </router-link>
           <router-link :to="{ name: 'favs'}">
             <md-list-item @click="closeDrawer()">
               <md-icon>favorite</md-icon>
-              <span class="md-list-item-text">Favourites</span>
+              <span class="md-list-item-text">Preferiti</span>
             </md-list-item>
           </router-link>
           <router-link :to="{ name: 'platforms'}">
             <md-list-item @click="closeDrawer()">
               <md-icon>video_label</md-icon>
-              <span class="md-list-item-text">Platforms</span>
+              <span class="md-list-item-text">Piattaforme</span>
             </md-list-item>
           </router-link>
           <router-link :to="{ name: 'pubs'}">
             <md-list-item @click="closeDrawer()">
               <md-icon>person</md-icon>
-              <span class="md-list-item-text">Publishers</span>
+              <span class="md-list-item-text">Editori</span>
             </md-list-item>
           </router-link>
           <router-link :to="{ name: 'devs'}">
             <md-list-item @click="closeDrawer()">
               <md-icon>group</md-icon>
-              <span class="md-list-item-text">Developers</span>
+              <span class="md-list-item-text">Sviluppatori</span>
             </md-list-item>
           </router-link>
           <md-divider v-if="user.loggedIn" style="margin: 8px 0 8px 0"></md-divider>
           <router-link v-if="user.loggedIn" :to="{ name: 'user'}" style="margin-bottom: -400px;">
             <md-list-item @click="closeDrawer()">
               <md-icon>settings</md-icon>
-              <span class="md-list-item-text">Settings</span>
+              <span class="md-list-item-text">Impostazioni</span>
             </md-list-item>
           </router-link>
         </md-list>
       </md-app-drawer>
       <md-app-content>
+        <div v-if="this.$g.pageLoading" style="position: absolute; width: 100%; z-index: 100;">
+            <md-progress-bar class="md-accent" md-mode="indeterminate"></md-progress-bar>
+        </div>
         <div v-if="!loaded" class="centered-container">
           <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
         </div>
@@ -99,12 +102,10 @@
 </template>
 
 <script>
-
   import "@firebase/app";
   import firebase from "@firebase/app";
   import store from "./store";
   import "@firebase/firestore";
- // import firebase from 'firebase'
   import { mapGetters } from "vuex";
 
   export default
@@ -114,6 +115,12 @@
       ...mapGetters({
         user: "user"
       })
+    },
+
+    watch:{
+      $route () {
+        this.$g.pageLoading = false; //questo è un "reset" in pratica
+      }
     },
 
     created() {
@@ -128,32 +135,17 @@
       };
 
       !firebase.apps.length ? firebase.initializeApp(configOptions) : firebase.app();
-      let db =firebase.firestore()
+      let db = firebase.firestore();
+
+      let self = this;
+
       firebase.auth().onAuthStateChanged(user => {
         store.dispatch("fetchUser", user);
-        this.loaded = true;
-        console.log("test")
+        self.loaded = true;
       });
-      let self =this;
-      db.collection("users").doc(this.user.data.email).get().then(
-              function(doc) {
-                let data =doc.data();
-                let user={
-                  'email':"",
-                  'displayName':""
-                };
-                console.log(data);
-                user['email'] = self.user.data.email;
-                user['displayName']=data['username'];
-                store.commit("SET_USER", {
-                  displayName: user.displayName});
-                console.log(user)
-                console.log(store)
-                self.$forceUpdate()
-              }
-      )
 
-
+      if (self.user.loggedIn)
+        self.updateUser(db);
     },
 
     name: "GameReview",
@@ -165,7 +157,22 @@
       //dataForSearchbox: []
     }),
 
-    methods:{
+    methods: {
+      updateUser(db) {
+        let self = this;
+        db.collection("users").doc(this.user.data.email)
+        .get()
+        .then(function(doc) {
+          let data = doc.data();
+          let dispName = data['username'];
+          store.commit("SET_USER", {
+            displayName: dispName
+          });
+          self.$forceUpdate();
+          self.loaded = true;
+        });
+      },
+
       logout() {
         firebase.auth()
         .signOut()

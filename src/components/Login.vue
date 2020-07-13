@@ -4,7 +4,7 @@
             <div class="title">
                 <img alt="logo" src="../assets/GR_Logo_256.png">
                 <div class="md-title">Game Review</div>
-                <div class="md-body-1">Login to save your favorites and to write reviews!</div>
+                <div class="md-body-1">Accedi per salvare i tuoi preferiti e per recensire giochi!</div>
             </div>
             <div class="form">
                 <md-field>
@@ -16,7 +16,7 @@
                     <md-input v-model="form.password" type="password"></md-input>
                 </md-field>
                 <div class="actions md-layout md-alignment-right">
-                    <md-button class="md-raised md-primary" @click="submit">Log in</md-button>
+                    <md-button class="md-raised md-primary" @click="submit">Accedi</md-button>
                 </div>
             </div>
             <div class="loading-overlay" v-if="loading">

@@ -1,30 +1,25 @@
 <template>
     <div class="centered-container" style="position: relative; height: 100%">
-        <md-card>
-            <md-card-header>Utente con mail {{user.data.email}} </md-card-header>
+        <md-card style="height: 200px">
+            <md-card-header>Utente con e-mail: <b>{{user.data.email}}</b> </md-card-header>
             <md-card-content>
                 <form>
                     <md-field>
-                        <label>Username:  {{user.data.displayName}}</label>
                         <md-input v-model="user.data.displayName" md-counter="30"></md-input>
-                        <span class="md-helper-text">Change username</span>
+                        <span class="md-helper-text">Cambia nome utente</span>
                     </md-field>
                 </form>
             </md-card-content>
             <md-card-actions>
-                <md-button>
-                    <md-button class="md-raised" @click="nuclearOption(user.data.email)">Elimina account</md-button>
-                </md-button>
-                <md-button>
-                    <md-button class="md-raised" @click="update(user.data.email,user.data.displayName )">UPDATE</md-button>
-                </md-button>
+                <md-button class="md-raised" @click="nuclearOption(user.data.email)">Elimina account</md-button>
+                <md-button class="md-raised md-primary" @click="update(user.data.email,user.data.displayName )">Aggiorna</md-button>
             </md-card-actions>
         </md-card>
         <md-snackbar md-position="left" :md-active.sync="showSnackbar">
             <span>{{error}}</span>
         </md-snackbar>
         <md-snackbar md-position="left" :md-active.sync="updated">
-            <span>User successfully updated!</span>
+            <span>Nome utente aggiornato con successo!</span>
         </md-snackbar>
     </div>
 </template>
@@ -34,7 +29,6 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
-    //import store from "../store"
 
     export default {
         computed: {
@@ -47,15 +41,13 @@
         data() {
             return {
                 error: null,
-                showSnackbar:false,
-                updated:false
+                showSnackbar: false,
+                updated: false,
             };
         },
 
         created() {
             //console.clear();
-           // console.log(store)
-           // console.log(this.user.data.displayName);
             if (!this.user.loggedIn)
                 this.$router.replace("/");
         },
@@ -102,8 +94,9 @@
                 });
 
             },
+
             nuclearOption(mail) {
-                if(confirm("Vuoi veramente cancellare l'account? Verranno cancellate anche le review ed i preferiti!")){
+                if(confirm("Vuoi veramente cancellare l'account? Verranno cancellate anche le review e i preferiti!")){
                     let db = firebase.firestore();
                     let self=this;
 
@@ -156,11 +149,7 @@
                         self.error = "errore durante la cancellazione";
                         self.showSnackbar=true;
                     });
-
-
-
                 }
-
             }
         }
     };
@@ -181,4 +170,3 @@
         border-radius: 8px;
     }
 </style>
-

@@ -4,11 +4,11 @@
             <div class="title">
                 <img alt="logo" src="../assets/GR_Logo_256.png">
                 <div class="md-title">Game Review</div>
-                <div class="md-body-1">Register to save your favorites and to write reviews!</div>
+                <div class="md-body-1">Registrati per salvare i tuoi preferiti e per recensire giochi!</div>
             </div>
             <div class="form">
                 <md-field>
-                    <label>Username</label>
+                    <label>Nome utente</label>
                     <md-input v-model="form.name" autofocus></md-input>
                 </md-field>
                 <md-field>

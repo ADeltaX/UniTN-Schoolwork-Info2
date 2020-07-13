@@ -1,51 +1,50 @@
 <template>
     <div>
-        <div v-if="busy" style="position: absolute; width: 100%; z-index: 100;">
-            <md-progress-bar class="md-accent" md-mode="indeterminate"></md-progress-bar>
+        <div>
+            <h1 class="md-headline">Piattaforma: {{ platName }}</h1>
         </div>
-        <div class="flex-container" style="margin-bottom: 24px">
+        <div class="flex-container">
             <md-card md-with-hover v-for="game in games"
                 :key="game.id">
-                <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
-                    <md-card-media md-big>
-                        <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.short_screenshots[0].image) + ")", }'></div>
-                    </md-card-media>
-                    <md-card-area>
-                        <md-card-header>
-                            <span class="md-title">{{game.name}}</span>
-                        </md-card-header>
-                        <md-card-actions v-if="user.loggedIn">
-                            <span>
-                                <md-button
-                                        class="md-icon-button"
-                                        @click.stop="addFavs(game.id,user.data.email,games.indexOf(game))">
-                                <md-icon>{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
-                                </md-button>
-                            </span>
-                        </md-card-actions>
-                    </md-card-area>
-                </md-card-media-cover>
+                <router-link :to="`/game/${game.id}/`">
+                    <md-card-media-cover md-solid>
+                        <md-card-media md-big>
+                            <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.short_screenshots[0].image) + ")", }'></div>
+                        </md-card-media>
+                        <md-card-area>
+                            <md-card-header>
+                                <span class="md-title">{{game.name}}</span>
+                            </md-card-header>
+                            <md-card-actions v-if="user.loggedIn">
+                                <span>
+                                    <md-button
+                                            class="md-icon-button" @click.prevent
+                                            @click="addFavs(game.id,user.data.email,games.indexOf(game))">
+                                    <md-icon>{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
+                                    </md-button>
+                                </span>
+                            </md-card-actions>
+                        </md-card-area>
+                    </md-card-media-cover>
+                </router-link>
             </md-card>
-            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="400" >
-            </div>
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="400"></div>
         </div>
     </div>
 </template>
 
 <script>
-
     import {mapGetters} from "vuex";
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
-    import ls from "local-storage"
 
     export default {
         data: function() {
             return {
                 games: [],
+                platName: "",
                 page: 0,
-                busy: false,
                 canLoadMore: true
             };
         },
@@ -55,11 +54,11 @@
                 user: "user"
             })
         },
-        created: function() {
+        async created() {
             console.clear();
-            this.loadMore();
-            this.$forceUpdate();
+            await this.getPlatName();
         },
+
         methods: {
             getResizedImage(url, size = 640){
                 //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
@@ -69,44 +68,51 @@
                 return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
             },
 
+            async getPlatName() {
+                let url = "https://api.rawg.io/api/platforms/".concat(this.$route.params.id);
+
+                try {
+                    const axios = require("axios");
+                    var response = await axios.get(url);
+                    this.platName = response.data.name;
+                } catch {
+                    //Let's ignore this for the moment.
+                }
+            },
+
             goBack: function() {
                 this.$router.back();
             },
 
-            getGame(id,slug) {
-                ls("gameId",id)
-                ls("gameSlug",slug)
-                this.$router.push({ name: 'game', params: { id,slug } })
-            },
-
             loadMore() {
-                this.busy = true;
+                this.$g.pageLoading = true;
                 this.page++;
                 let url
                 const axios = require("axios");
-                if(this.$route.params.id == null && ls("platformId")== null)
-                {
-                    this.$router.replace({name:"home"})
-                }
+
                 if(this.$route.params.id != null)
                     url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&platforms=").concat(this.$route.params.id);
-                else
-                    url="https://api.rawg.io/api/games?page=".concat(this.page).concat("&platforms=").concat(ls("platformId").toString());
+
                 axios.get(url).then((response) => {
                     this.games = this.games.concat(response.data.results);
                     this.games.forEach(el => {
                         this.checkFavs(el.id,this.user.data.email,this.games.indexOf(el))
                     });
 
-                    this.busy = false;
+                    this.$g.pageLoading = false;
 
                     if (response.data.next == null)
                         this.canLoadMore = false;
                 })
                 .catch((error)=>{
+                    if (error.response) {
+                        //Let's suppose it's a 404 (we may have a gateway error, auth error, etc.... but that's not a problem for the moment)
+                        this.$router.replace({ name: "notFound" });
+                    }
+
                     this.page--;
                     console.log(error);
-                    this.busy = false;
+                    this.$g.pageLoading = false;
                 });
                 this.$forceUpdate();
             },

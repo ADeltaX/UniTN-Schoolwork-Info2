@@ -21,8 +21,8 @@
                 </md-field>
             </div>
             <div class="actions md-layout md-alignment-center-space-between">
-                 <md-button class="md-raised md-primary" @click="submit">Register</md-button>
-             </div>
+                <md-button class="md-raised md-primary" @click="submit">Register</md-button>
+            </div>
             <div class="loading-overlay" v-if="loading">
                 <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
             </div>
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-    import { mapGetters } from "vuex";
+    import {mapGetters} from "vuex";
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
@@ -42,7 +42,7 @@
     export default {
         data() {
             return {
-                loading:false,
+                loading: false,
                 showSnackbar: false,
                 form: {
                     name: "",
@@ -76,37 +76,37 @@
                 let self = this;
 
                 firebase.auth()
-                .createUserWithEmailAndPassword(this.form.email, this.form.password)
-                .then(data => {                   
-                    data.user.updateProfile({
-                        displayName: self.form.name,
-                        email: self.form.email
+                    .createUserWithEmailAndPassword(this.form.email, this.form.password)
+                    .then(data => {
+                        data.user.updateProfile({
+                            displayName: self.form.name,
+                            email: self.form.email
+                        })
+                            .then(() => {
+                                //TODO: password hashato
+
+                                //FIX for login issue.
+                                self.user.data.displayName = self.form.name;
+
+                                db.collection("users").doc(self.form.email.toLowerCase()).set({
+                                    username: self.form.name,
+                                    password: self.form.password,
+                                })
+                                    .then(function () {
+                                        console.log("Utente aggiunto con successo");
+                                    })
+                                    .catch(function (error) {
+                                        console.error("Error writing document: ", error);
+                                    });
+
+                                router.replace("/");
+                            });
                     })
-                    .then(() => {
-                        //TODO: password hashato
-
-                        //FIX for login issue.
-                        self.user.data.displayName = self.form.name;
-
-                        db.collection("users").doc(self.form.email.toLowerCase()).set({
-                            username: self.form.name,
-                            password: self.form.password,
-                        })
-                        .then(function () {
-                            console.log("Utente aggiunto con successo");
-                        })
-                        .catch(function (error) {
-                            console.error("Error writing document: ", error);
-                        });
-
-                        router.replace("/");
+                    .catch(err => {
+                        this.error = err.message;
+                        this.showSnackbar = true;
+                        this.loading = false;
                     });
-                })
-                .catch(err => {
-                    this.error = err.message;
-                    this.showSnackbar = true;
-                    this.loading = false;
-                });
 
                 //Lo aggiungiamo alla collection utenti, così da poter salvare lo username
             }
@@ -125,6 +125,7 @@
         .title {
             text-align: center;
             margin-bottom: 30px;
+
             img {
                 margin-bottom: 16px;
                 max-width: 80px;
@@ -136,7 +137,7 @@
                 margin: 0;
             }
         }
-        
+
         .md-content {
             z-index: 1;
             padding: 40px;
@@ -144,7 +145,7 @@
             max-width: 400px;
             position: relative;
         }
-        
+
         .loading-overlay {
             z-index: 10;
             top: 0;

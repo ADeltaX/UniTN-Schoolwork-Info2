@@ -1,4 +1,4 @@
- export default {
+export default {
     goTo(router, x) {
         router.push({
             name: x
@@ -13,14 +13,14 @@
         router.back();
     },
 
-    getResizedImage(url, size = 640){
+    getResizedImage(url, size = 640) {
         //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080/3840x2160 per un lag garantito (ovvero CPU e RAM alle stelle)
         if (url == null) //Capita che il server risponda con null
             return "/img/NoImage.png";
 
         return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
     },
-    getTitleName: async function(urlBase, id) {
+    getTitleName: async function (urlBase, id) {
         let url = urlBase.concat(id);
 
         try {
@@ -35,4 +35,4 @@
             return null;
         }
     },
- }
+}

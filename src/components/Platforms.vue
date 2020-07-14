@@ -5,11 +5,12 @@
         </div>
         <div class="flex-container">
             <md-card md-with-hover v-for="game in platforms"
-                :key="game.id">
+                     :key="game.id">
                 <router-link :to="`/platform/${game.id}/`">
-                    <md-card-media-cover md-solid >
+                    <md-card-media-cover md-solid>
                         <md-card-media md-big>
-                            <div class="img-container" :style='{ backgroundImage: "url(" + foes.getResizedImage(game.image_background) + ")", }'></div>
+                            <div class="img-container"
+                                 :style='{ backgroundImage: "url(" + foes.getResizedImage(game.image_background) + ")", }'></div>
                         </md-card-media>
                         <md-card-area>
                             <md-card-header>
@@ -19,15 +20,16 @@
                     </md-card-media-cover>
                 </router-link>
             </md-card>
-            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="400" >
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading"
+                 infinite-scroll-distance="400">
             </div>
         </div>
     </div>
 </template>
 <script>
-    import { mapGetters } from "vuex";
+    import {mapGetters} from "vuex";
     import foes from "../foes";
-    
+
     export default {
         computed: {
             // mappa `this.user` a `this.$store.getters.user`
@@ -57,19 +59,19 @@
                 this.page++;
                 this.$g.pageLoading = true;
                 const axios = require("axios");
-                let url="https://api.rawg.io/api/platforms?&page_size=20&page=".concat(this.page);
+                let url = "https://api.rawg.io/api/platforms?&page_size=20&page=".concat(this.page);
                 axios.get(url).then((response) => {
-                    this.platforms= this.platforms.concat(response.data.results);
+                    this.platforms = this.platforms.concat(response.data.results);
                     this.$g.pageLoading = false;
 
                     if (response.data.next == null)
                         this.canLoadMore = false;
                 })
-                .catch((error) => {
-                    this.page--;
-                    this.$g.pageLoading = false;
-                    console.log(error);
-                });
+                    .catch((error) => {
+                        this.page--;
+                        this.$g.pageLoading = false;
+                        console.log(error);
+                    });
                 this.$forceUpdate();
             }
         }

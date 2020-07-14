@@ -95,7 +95,7 @@
 
             checkFavs(gameId, userId,elementId) {
                 let id = "".concat(userId).concat('-').concat(gameId);
-                let self=this;
+                let self = this;
                 let db = firebase.firestore();
                 
                 //controlliamo se è già inserito

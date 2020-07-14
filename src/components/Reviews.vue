@@ -14,10 +14,9 @@
         </md-empty-state>
 
         <div v-else-if="!this.$g.pageLoading" class="flex-container">
-            <div class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
-                v-for="rev in revs"
+            <div v-for="rev in revs"
                 :key="rev.id">
-                <md-card style="min-height: 180px; height: 100%; max-height: 360px">
+                <md-card style="height: 360px;">
                     <md-card-header>
                         <span class="md-title">
                             {{rev.title}}
@@ -27,12 +26,12 @@
                             {{rev.gameName}}
                         </span>
                     </md-card-header>
-                    <md-card-content v-if="user.loggedIn">
-                        <md-card-content style="overflow: hidden; min-height: 60px; max-height: 200px">
+                    <md-card-content>
+                        <md-card-content style="overflow: hidden; min-height: 60px; max-height: 200px;">
                             {{rev.text}}
                         </md-card-content>
                     </md-card-content>
-                    <md-card-actions style="margin-bottom: -24px">
+                    <md-card-actions style="position: absolute; bottom: 0; right: 0; align: right;">
                         <div>
                             <span>VOTO: </span>
                             <span class="md-title">{{rev.rating}}</span>

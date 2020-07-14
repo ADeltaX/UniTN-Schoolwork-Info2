@@ -28,7 +28,7 @@
                     </md-card-media-cover>
                 </router-link>
             </md-card>
-            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="400"></div>
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="10"></div>
         </div>
     </div>
 </template>
@@ -57,6 +57,7 @@
             })
         },
         async created() {
+            console.clear()
             document.title = "Piattaforma - Game Review";
             this.platName = await foes.getTitleName("https://api.rawg.io/api/platforms/", this.$route.params.id);
             
@@ -86,6 +87,7 @@
                     }
 
                     this.$g.pageLoading = false;
+                    this.$forceUpdate();
 
                     console.log(this.canLoadMore)
                     if (response.data.next == null)
@@ -95,10 +97,11 @@
                     this.page--;
                     console.log(error);
                     this.$g.pageLoading = false;
+                    this.$forceUpdate();
                 });
 
                 console.log(this.games)
-                this.$forceUpdate();
+
             },
 
             checkFavs(gameId, userId, elementId) {

@@ -101,7 +101,7 @@
                     let db = firebase.firestore();
                     let self=this;
 
-                    console.log("Inizio eliminazione user dalla collection");
+                    console.log("Inizio eliminazione user dalla collection:" + mail);
 
                     db.collection("users").doc(mail).delete().then(function() {
                         console.log("Eliminato user dalla collection");
@@ -140,15 +140,21 @@
                     console.log("inizio eliminazione");
 
                     let user = firebase.auth().currentUser;
-                    user.delete().then(function() {
-                        console.log("Eliminazione dell'utente eseguita con successo");
-                        self.$router.replace({
-                            path: "/"
-                        })
-                    }).catch(function(error) {
+                    firebase.auth()
+                        .signOut()
+                        .then(()=> user.delete().then(function() {
+                            console.log("Eliminazione dell'utente eseguita con successo");
+                            self.$router.replace({
+                                path: "/"
+                            })
+                        }))
+                   .catch(function(error) {
                         console.error("Error deleting user: ", error);
                         self.error = "errore durante la cancellazione";
                         self.showSnackbar=true;
+                       /* self.$router.replace({
+                            path: "/"
+                        })*/
                     });
                 }
             }

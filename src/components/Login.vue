@@ -30,7 +30,7 @@
 </template>
 
 <script>
-    import { mapGetters } from "vuex";
+    import {mapGetters} from "vuex";
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
@@ -68,16 +68,16 @@
                 let router = this.$router;
 
                 firebase.auth()
-                .signInWithEmailAndPassword(this.form.email, this.form.password)
-                .then(function() {
-                    router.replace("/");
-                    this.loading = false;
-                })
-                .catch(err => {
-                    this.error = err.message;
-                    this.showSnackbar = true;
-                    this.loading = false;
-                });
+                    .signInWithEmailAndPassword(this.form.email, this.form.password)
+                    .then(function () {
+                        router.replace("/");
+                        this.loading = false;
+                    })
+                    .catch(err => {
+                        this.error = err.message;
+                        this.showSnackbar = true;
+                        this.loading = false;
+                    });
             }
         }
     };
@@ -94,6 +94,7 @@
         .title {
             text-align: center;
             margin-bottom: 30px;
+
             img {
                 margin-bottom: 16px;
                 max-width: 80px;

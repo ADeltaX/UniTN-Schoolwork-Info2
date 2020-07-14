@@ -5,11 +5,12 @@
         </div>
         <div class="flex-container">
             <md-card md-with-hover v-for="game in dev"
-                :key="game.id">
+                     :key="game.id">
                 <router-link :to="`/game/${game.id}/`">
                     <md-card-media-cover md-solid>
                         <md-card-media md-big>
-                            <div class="img-container" :style='{ backgroundImage: "url(" + foes.getResizedImage(game.background_image) + ")", }'></div>
+                            <div class="img-container"
+                                 :style='{ backgroundImage: "url(" + foes.getResizedImage(game.background_image) + ")", }'></div>
                         </md-card-media>
                         <md-card-area>
                             <md-card-header>
@@ -28,7 +29,8 @@
                     </md-card-media-cover>
                 </router-link>
             </md-card>
-            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="400"></div>
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading"
+                 infinite-scroll-distance="400"></div>
         </div>
     </div>
 </template>
@@ -41,7 +43,7 @@
     import foes from "../foes";
 
     export default {
-        data: function() {
+        data: function () {
             return {
                 dev: [],
                 devName: "",
@@ -50,7 +52,7 @@
                 foes
             };
         },
-        
+
         computed: {
             // mappa `this.user` a `this.$store.getters.user`
             ...mapGetters({
@@ -63,7 +65,7 @@
             this.devName = await foes.getTitleName("https://api.rawg.io/api/developers/", this.$route.params.id);
 
             if (this.devName == null) //è successo qualcosa, quindi (per ultra semplificazione), gestiamo un solo errore e rimandiamo al 404
-                this.$router.replace({ name: "notFound" }); 
+                await this.$router.replace({name: "notFound"});
         },
 
         methods: {
@@ -81,14 +83,13 @@
 
             },
 
-            addFavs(gameId, userId,elementId) {
+            addFavs(gameId, userId, elementId) {
                 let id = "".concat(userId).concat("-").concat(gameId);
                 let db = firebase.firestore();
-                this.checkFavs(gameId, userId,elementId);
+                this.checkFavs(gameId, userId, elementId);
                 let self = this;
 
-                if(this.dev[elementId].user_game)
-                {
+                if (this.dev[elementId].user_game) {
                     db.collection("favourites").doc(id).delete().then(function () {
                         console.log("Document successfully deleted!");
                         self.dev[elementId].user_game = false;
@@ -108,7 +109,7 @@
                     });
                 }
             },
-            
+
             loadMore() {
                 if (!this.canLoadMore)
                     return;
@@ -125,22 +126,22 @@
                             this.checkFavs(el.id, this.user.data.email, this.dev.indexOf(el));
                         });
                     }
-                    
+
                     this.$g.pageLoading = false;
-                    
+
                     if (response.data.next == null)
                         this.canLoadMore = false;
                 })
-                .catch((error) => {
-                    if (error.response) {
-                        //Let's suppose it's a 404 (we may have a gateway error, auth error, etc.... but that's not a problem for the moment)
-                       // this.$router.replace({ name: "notFound" });
-                    }
+                    .catch((error) => {
+                        if (error.response) {
+                            //Let's suppose it's a 404 (we may have a gateway error, auth error, etc.... but that's not a problem for the moment)
+                            // this.$router.replace({ name: "notFound" });
+                        }
 
-                    this.page--;
-                    this.$g.pageLoading = false;
-                    console.log(error);
-                });
+                        this.page--;
+                        this.$g.pageLoading = false;
+                        console.log(error);
+                    });
 
                 this.$forceUpdate();
             }

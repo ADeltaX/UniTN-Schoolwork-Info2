@@ -5,11 +5,12 @@
         </div>
         <div class="flex-container">
             <md-card md-with-hover v-for="game in pubs"
-                :key="game.id">
+                     :key="game.id">
                 <router-link :to="`/pub/${game.id}/`">
                     <md-card-media-cover md-solid>
                         <md-card-media md-big>
-                            <div class="img-container" :style='{ backgroundImage: "url(" + foes.getResizedImage(game.image_background) + ")", }'></div>
+                            <div class="img-container"
+                                 :style='{ backgroundImage: "url(" + foes.getResizedImage(game.image_background) + ")", }'></div>
                         </md-card-media>
                         <md-card-area>
                             <md-card-header>
@@ -19,13 +20,14 @@
                     </md-card-media-cover>
                 </router-link>
             </md-card>
-            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="400" >
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading"
+                 infinite-scroll-distance="400">
             </div>
         </div>
     </div>
 </template>
 <script>
-    import { mapGetters } from "vuex";
+    import {mapGetters} from "vuex";
     import foes from "../foes";
 
     export default {
@@ -36,7 +38,7 @@
             })
         },
 
-        data: function() {
+        data: function () {
             return {
                 pubs: [],
                 offset: 0,
@@ -46,7 +48,7 @@
             };
         },
 
-        created: function() {
+        created: function () {
             document.title = "Editori - Game Review";
         },
 
@@ -66,11 +68,11 @@
                     if (response.data.next == null)
                         this.canLoadMore = false;
                 })
-                .catch((error) => {
-                    this.page--;
-                    this.$g.pageLoading = false;
-                    console.log(error);
-                });
+                    .catch((error) => {
+                        this.page--;
+                        this.$g.pageLoading = false;
+                        console.log(error);
+                    });
                 this.$forceUpdate();
             }
         }

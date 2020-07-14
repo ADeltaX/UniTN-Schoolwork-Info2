@@ -63,7 +63,7 @@
             this.pubName = await foes.getTitleName("https://api.rawg.io/api/publishers/", this.$route.params.id);
 
             if (this.pubName == null) //è successo qualcosa, quindi (per ultra semplificazione), gestiamo un solo errore e rimandiamo al 404
-                this.$router.replace({ name: "notFound" }); 
+                await this.$router.replace({name: "notFound"});
         },
 
         methods: {

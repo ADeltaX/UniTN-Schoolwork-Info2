@@ -12,7 +12,7 @@ import axios from 'axios'
 
 Vue.use(VueMaterial)
 
-let infiniteScroll =  require('vue-infinite-scroll');
+let infiniteScroll = require('vue-infinite-scroll');
 Vue.use(infiniteScroll)
 
 
@@ -20,25 +20,28 @@ Vue.config.productionTip = false
 Vue.prototype.$http = axios
 
 var shared = new Vue({
-  data: { 
-    pageLoading: false
-  }
+    data: {
+        pageLoading: false
+    }
 });
 
-shared.install = function(){
-  Object.defineProperty(Vue.prototype, '$g', {
-    get() { return shared }
-  });
+shared.install = function () {
+    Object.defineProperty(Vue.prototype, '$g', {
+        get() {
+            return shared
+        }
+    });
 };
 Vue.use(shared);
 
 import "@firebase/app";
 import "@firebase/firestore";
+
 require('firebase/auth')
 
 new Vue({
- // foes,
-  router,
-  store,
-  render: h => h(App)
+    // foes,
+    router,
+    store,
+    render: h => h(App)
 }).$mount("#app");

@@ -26,7 +26,8 @@
 </template>
 <script>
     import { mapGetters } from "vuex";
-    import foes  from "../foes";
+    import foes from "../foes";
+    
     export default {
         computed: {
             // mappa `this.user` a `this.$store.getters.user`
@@ -44,7 +45,7 @@
             };
         },
         created() {
-            console.clear();
+            document.title = "Piattaforme - Game Review";
         },
 
         methods: {

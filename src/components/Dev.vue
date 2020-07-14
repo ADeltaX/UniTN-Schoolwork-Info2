@@ -38,7 +38,7 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
-    import foes from "../foes"
+    import foes from "../foes";
 
     export default {
         data: function() {
@@ -59,26 +59,15 @@
         },
 
         async created() {
-            console.clear();
-            await this.getDevName();
+            document.title = "Sviluppatore - Game Review";
+            this.devName = await foes.getTitleName("https://api.rawg.io/api/developers/", this.$route.params.id);
+
+            if (this.devName == null) //è successo qualcosa, quindi (per ultra semplificazione), gestiamo un solo errore e rimandiamo al 404
+                this.$router.replace({ name: "notFound" }); 
         },
 
         methods: {
-
-            async getDevName() {
-                let url = "https://api.rawg.io/api/developers/".concat(this.$route.params.id);
-
-                try {
-                    const axios = require("axios");
-                    let response = await axios.get(url);
-                    this.devName = response.data.name;
-                } catch {
-                    //Let's ignore this for the moment.
-                }
-            },
-
             checkFavs(gameId, userId, elementId) {
-
                 let id = "".concat(userId).concat('-').concat(gameId);
                 let self = this;
                 let db = firebase.firestore();
@@ -96,7 +85,6 @@
                 let id = "".concat(userId).concat("-").concat(gameId);
                 let db = firebase.firestore();
                 this.checkFavs(gameId, userId,elementId);
-               // console.log(this.dev)
                 let self = this;
 
                 if(this.dev[elementId].user_game)

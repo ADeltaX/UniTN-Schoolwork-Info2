@@ -73,7 +73,8 @@
         },
 
         created: function() {
-            console.clear();
+            document.title = "Preferiti - Game Review";
+
             if (this.user.loggedIn)
                 this.checkFavs(this.user.data.email);
             else

@@ -5,7 +5,7 @@
         </div>
         <div class="flex-container">
             <md-card md-with-hover v-for="game in devs"
-                     :key="game.id">
+                :key="game.id">
                 <router-link :to="`/dev/${game.id}/`">
                     <md-card-media-cover md-solid>
                         <md-card-media md-big>
@@ -26,7 +26,8 @@
 </template>
 <script>
     import { mapGetters } from "vuex";
-    import foes from "../foes"
+    import foes from "../foes";
+    
     export default {
         computed: {
             // mappa `this.user` a `this.$store.getters.user`
@@ -44,12 +45,11 @@
             };
         },
 
-        created: function() {
-            console.clear();
+        created() {
+            document.title = "Sviluppatori - Game Review";
         },
 
         methods: {
-
             loadMore() {
                 if (!this.canLoadMore)
                     return;
@@ -65,11 +65,11 @@
                     if (response.data.next == null)
                         this.canLoadMore = false;
                 })
-                    .catch((error) => {
-                        this.page--;
-                        this.$g.pageLoading = false;
-                        console.log(error);
-                    });
+                .catch((error) => {
+                    this.page--;
+                    this.$g.pageLoading = false;
+                    console.log(error);
+                });
                 this.$forceUpdate();
             }
         }

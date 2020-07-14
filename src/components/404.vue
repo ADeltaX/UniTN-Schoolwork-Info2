@@ -3,7 +3,7 @@
         <md-empty-state
             md-icon="cancel"
             md-label="404!"
-            md-description="The page you are searching for doesn't exist anymore or contains errors.">
+            md-description="La pagina che stai cercando non esiste.">
             <md-button class="md-primary md-raised" @click="foes.goTo($router,'home')">Home</md-button>
         </md-empty-state>
     </div>
@@ -16,7 +16,9 @@
             return{
                 foes
             }
+        },
+        created() {
+            document.title = "Non trovato - Game Review";
         }
     }
-
 </script>

@@ -57,27 +57,15 @@
             })
         },
         async created() {
-            console.clear();
-            await this.getPlatName();
+            document.title = "Piattaforma - Game Review";
+            this.platName = await foes.getTitleName("https://api.rawg.io/api/platforms/", this.$route.params.id);
+            
+            if (this.platName == null) //è successo qualcosa, quindi (per ultra semplificazione), gestiamo un solo errore e rimandiamo al 404
+                this.$router.replace({ name: "notFound" }); 
         },
 
         methods: {
-
-
-            async getPlatName() {
-                let url = "https://api.rawg.io/api/platforms/".concat(this.$route.params.id);
-
-                try {
-                    const axios = require("axios");
-                    let response = await axios.get(url);
-                    this.platName = response.data.name;
-                } catch {
-                    //Let's ignore this for the moment.
-                }
-            },
-
             loadMore() {
-
                 if (!this.canLoadMore)
                     return;
 
@@ -92,7 +80,6 @@
                 axios.get(url).then((response) => {
                     this.games = this.games.concat(response.data.results);
                     if (this.user.loggedIn) {
-                        //console.log(this.games)
                         this.games.forEach(el => {
                             this.checkFavs(el.id, this.user.data.email, this.games.indexOf(el));
                         });
@@ -100,27 +87,16 @@
 
                     this.$g.pageLoading = false;
 
-                   // console.log(response)
                     console.log(this.canLoadMore)
                     if (response.data.next == null)
                         this.canLoadMore = false;
-
-                   // this.$forceUpdate()
-
-
                 })
                 .catch((error)=>{
-                    if (error.response) {
-                        //Let's suppose it's a 404 (we may have a gateway error, auth error, etc.... but that's not a problem for the moment)
-                        //this.$router.replace({ name: "notFound" });  no m8
-
-                    }
-
                     this.page--;
                     console.log(error);
                     this.$g.pageLoading = false;
-                    //console.log(self.games)
                 });
+
                 console.log(this.games)
                 this.$forceUpdate();
             },

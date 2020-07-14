@@ -4,7 +4,7 @@
             md-icon="rate_review"
             md-label="Accedi per vedere le tue recensioni!"
             md-description="Accedendo potrai gestire le tue recensioni.">
-            <md-button class="md-primary md-raised" @click="foes.goTo($router,'login')">Login</md-button>
+            <md-button class="md-primary md-raised" @click="foes.goTo($router, 'login')">Login</md-button>
         </md-empty-state>
 
         <md-empty-state v-else-if="revs.length === 0"
@@ -13,44 +13,44 @@
             md-description="Vai al tuo gioco preferito e recensiscilo!">
         </md-empty-state>
 
-        <div v-else-if="!this.$g.pageLoading" style="margin-bottom: 56px">
+        <div v-else-if="!this.$g.pageLoading" class="flex-container">
             <div class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100"
                 v-for="rev in revs"
                 :key="rev.id">
-                <md-card-header>
-                    <span class="md-title">
-                         {{rev.gameName}}
+                <md-card style="min-height: 180px; height: 100%; max-height: 360px">
+                    <md-card-header>
+                        <span class="md-title">
+                            {{rev.title}}
+                        </span>
                         -
-                        {{rev.title}}
-                    </span>
-                </md-card-header>
-                <md-card-content v-if="user.loggedIn">
-                    <md-card-content>
-                        {{rev.text}}
+                        <span class="md-subheading">
+                            {{rev.gameName}}
+                        </span>
+                    </md-card-header>
+                    <md-card-content v-if="user.loggedIn">
+                        <md-card-content style="overflow: hidden; min-height: 60px; max-height: 200px">
+                            {{rev.text}}
+                        </md-card-content>
                     </md-card-content>
-                </md-card-content>
-                <md-card-actions>
-                    <!-- debug
-                    <md-button
+                    <md-card-actions style="margin-bottom: -24px">
+                        <div>
+                            <span>VOTO: </span>
+                            <span class="md-title">{{rev.rating}}</span>
+                            <span>/100</span>
+                        </div>
+                        <md-button
                             class="md-icon-button"
-                            @click.stop="debug()">
-                        <md-icon>info</md-icon>
-                    </md-button>  -->
-                    <md-button class="md-icon-button">{{rev.rating}}</md-button>
-                            <md-button
-                                class="md-icon-button"
-                                @click.stop="remRev(rev['game-id'],user.data.email,revs.indexOf(rev))">
+                            @click.stop="remRev(rev['game-id'], user.data.email, revs.indexOf(rev))">
                             <md-icon>delete</md-icon>
                         </md-button>
-                    <md-button
-                            class="md-icon-button"
-                            @click.stop="foes.goSpecific($router,{name:'game',params:{id:rev['game-id']}})">
-                        <md-icon>arrow_forward</md-icon>
-                    </md-button>
+                        <md-button
+                                class="md-icon-button"
+                                @click.stop="foes.goSpecific($router, { name: 'game', params: { id: rev['game-id'] } })">
+                            <md-icon>arrow_forward</md-icon>
+                        </md-button>
                     </md-card-actions>
-                </div>
-                <!-- <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this$g.pageLoading" infinite-scroll-distance="10" >
-                    </div> -->
+                </md-card>
+            </div>
         </div>
     </div>
 </template>
@@ -74,12 +74,12 @@
             return {
                 revs: [],
                 foes
-
             };
         },
 
         created() {
-            console.clear();
+            document.title = "Recensioni - Game Review";
+
             if (this.user.loggedIn)
                 this.load(this.user.data.email);
 
@@ -87,11 +87,6 @@
         },
 
         methods: {
-
-            debug(){
-              console.log(this.revs);
-            },
-
             load(userId) {
                 this.$g.pageLoading = true;
                 let self = this;
@@ -108,18 +103,13 @@
                             axios.get(url).then((response) => {
                                 //console.log(response);
                                 element.gameName = response.data.name;
-                                self.$forceUpdate()
-
+                                self.$forceUpdate();
                             });
                         })
 
-
                         self.$g.pageLoading = false;
 
-                      //  console.log(self.revs);
-                      }
-                    else
-                        {
+                    } else {
                         self.$g.pageLoading = false;
                         console.log("No reviews");
                     }
@@ -130,33 +120,23 @@
 
             },
 
-            remRev(gameId, userId,elementId) {
-                let id = "".concat(userId).concat("-").concat(gameId);
-                let db = firebase.firestore();
+            remRev(gameId, userId, elementId) {
+                if(confirm("Vuoi veramente cancellare la recensione?")){
+                    let id = "".concat(userId).concat("-").concat(gameId);
+                    let db = firebase.firestore();
 
-                let self = this;
-               // console.log(self.revs[elementId]);
+                    let self = this;
 
-                db.collection("reviews").doc(id).delete().then(function () {
-                    console.log("Review successfully deleted!");
-                    self.revs.splice(elementId,1); // cancella il gioco dall'array
-                    self.$forceUpdate();
+                    db.collection("reviews").doc(id).delete().then(function () {
+                        console.log("Review successfully deleted!");
+                        self.revs.splice(elementId,1); // cancella il gioco dall'array
+                        self.$forceUpdate();
 
-                }).catch(function (error) {
-                    console.error("Error removing review: ", error);
-                });
+                    }).catch(function (error) {
+                        console.error("Error removing review: ", error);
+                    });
+                }
             }
-
-
         }
     };
 </script>
-<style lang="scss" scoped>
-    .md-card {
-        width: fit-content;
-        height: fit-content;
-        margin: 4px;
-        display: inline-block;
-        vertical-align: top;
-    }
-</style>

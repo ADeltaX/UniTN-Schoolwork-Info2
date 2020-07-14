@@ -9,7 +9,7 @@
                 <router-link :to="`/game/${game.id}/`">
                     <md-card-media-cover md-solid>
                         <md-card-media md-big>
-                            <div class="img-container" :style='{ backgroundImage: "url(" + getResizedImage(game.background_image) + ")", }'></div>
+                            <div class="img-container" :style='{ backgroundImage: "url(" + foes.getResizedImage(game.background_image) + ")", }'></div>
                         </md-card-media>
                         <md-card-area>
                             <md-card-header>
@@ -28,7 +28,7 @@
                     </md-card-media-cover>
                 </router-link>
             </md-card>
-            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this$g.pageLoading" infinite-scroll-distance="400"></div>
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="400"></div>
         </div>
     </div>
 </template>
@@ -38,15 +38,16 @@
     import "@firebase/app";
     import firebase from "@firebase/app";
     import "@firebase/firestore";
+    import foes from "../foes";
 
     export default {
         data: function() {
             return {
                 pub: [],
                 page: 0,
-                busy: false,
                 pubName: "",
-                canLoadMore: true
+                canLoadMore: true,
+                foes
             };
         },
 
@@ -58,36 +59,15 @@
         },
 
         async created() {
-            console.clear();
-            await this.getPubName();
+            document.title = "Editore - Game Review";
+            this.pubName = await foes.getTitleName("https://api.rawg.io/api/publishers/", this.$route.params.id);
+
+            if (this.pubName == null) //è successo qualcosa, quindi (per ultra semplificazione), gestiamo un solo errore e rimandiamo al 404
+                this.$router.replace({ name: "notFound" }); 
         },
 
         methods: {
-            getResizedImage(url, size = 640){
-                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
-                if (url == null) //Capita che il server risponda con null
-                    return null;
-
-                return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
-            },
-
-            async getPubName() {
-                let url = "https://api.rawg.io/api/publishers/".concat(this.$route.params.id);
-
-                try {
-                    const axios = require("axios");
-                    var response = await axios.get(url);
-                    this.pubName = response.data.name;
-                } catch {
-                    //Let's ignore this for the moment.
-                }
-            },
-
-            goBack: function() {
-                this.$router.back();
-            },
-
-            checkFavs(gameId, userId,elementId) {
+            checkFavs(gameId, userId, elementId) {
                 let id = "".concat(userId).concat('-').concat(gameId);
                 let self=this;
                 let db = firebase.firestore();
@@ -103,9 +83,9 @@
 
             addFavs(gameId, userId, elementId) {
                 let id = "".concat(userId).concat("-").concat(gameId);
+                let self = this;
                 let db = firebase.firestore();
                 this.checkFavs(gameId, userId,elementId);
-                let self=this;
 
                 if(this.pub[elementId].user_game)
                 {
@@ -142,9 +122,7 @@
 
                 axios.get(url).then((response) => {
                     this.pub = this.pub.concat(response.data.results);
-                    //console.log(this.user.loggedIn)
                     if (this.user.loggedIn) {
-
                         this.pub.forEach(el => {
                            // console.log(this.user.loggedIn)
                             this.checkFavs(el.id, this.user.data.email, this.pub.indexOf(el));
@@ -156,11 +134,6 @@
                         this.canLoadMore = false;
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        //Let's suppose it's a 404 (we may have a gateway error, auth error, etc.... but that's not a problem for the moment)
-                       // this.$router.replace({ name: "notFound" });
-                    }
-
                     this.page--;
                     this.$g.pageLoading = false;
                     console.log(error);

@@ -186,7 +186,7 @@
 
         },
         created() {
-            console.clear();
+            document.title = "Gioco - Game Review";
             const axios = require("axios");
 
             let url;

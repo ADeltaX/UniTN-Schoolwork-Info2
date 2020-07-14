@@ -61,7 +61,8 @@
         },
 
         created() {
-            console.clear();
+            document.title = "Registrati - Game Review";
+
             if (this.user.loggedIn)
                 this.$router.replace("/");
         },

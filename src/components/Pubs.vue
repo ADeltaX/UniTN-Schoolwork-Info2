@@ -7,9 +7,9 @@
             <md-card md-with-hover v-for="game in pubs"
                 :key="game.id">
                 <router-link :to="`/pub/${game.id}/`">
-                    <md-card-media-cover md-solid @click.native="getGame(game.id, game.slug)">
+                    <md-card-media-cover md-solid>
                         <md-card-media md-big>
-                            <div class="img-container" :style='{ backgroundImage: "url(" + game.image_background + ")", }'></div>
+                            <div class="img-container" :style='{ backgroundImage: "url(" + foes.getResizedImage(game.image_background) + ")", }'></div>
                         </md-card-media>
                         <md-card-area>
                             <md-card-header>
@@ -19,13 +19,14 @@
                     </md-card-media-cover>
                 </router-link>
             </md-card>
-            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this$g.pageLoading" infinite-scroll-distance="400" >
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="400" >
             </div>
         </div>
     </div>
 </template>
 <script>
     import { mapGetters } from "vuex";
+    import foes from "../foes";
 
     export default {
         computed: {
@@ -39,25 +40,17 @@
             return {
                 pubs: [],
                 offset: 0,
-                busy: false,
                 page: 0,
-                canLoadMore: true
+                canLoadMore: true,
+                foes
             };
         },
 
         created: function() {
-            console.clear();
+            document.title = "Editori - Game Review";
         },
 
         methods: {
-            getResizedImage(url, size = 640){
-                //Ci serve per forza altrimenti siamo costretti a caricare nel DOM immagini a 1920x1080 per un lag garantito
-                if (url == null) //Capita che il server risponda con null
-                    return null;
-
-                return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
-            },
-
             loadMore() {
                 if (!this.canLoadMore)
                     return;
@@ -65,7 +58,7 @@
                 this.$g.pageLoading = true;
                 this.page++;
                 const axios = require("axios");
-                let url="https://api.rawg.io/api/publishers?page=".concat(this.page);
+                let url = "https://api.rawg.io/api/publishers?page=".concat(this.page);
                 axios.get(url).then((response) => {
                     this.pubs = this.pubs.concat(response.data.results);
                     this.$g.pageLoading = false;
@@ -73,7 +66,7 @@
                     if (response.data.next == null)
                         this.canLoadMore = false;
                 })
-                .catch((error)=>{
+                .catch((error) => {
                     this.page--;
                     this.$g.pageLoading = false;
                     console.log(error);

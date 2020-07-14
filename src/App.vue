@@ -120,10 +120,13 @@
     watch:{
       $route () {
         this.$g.pageLoading = false; //questo è un "reset" in pratica
+        document.title = "Game Review";
       }
     },
 
     created() {
+      document.title = "Game Review";
+
       const configOptions = {
         apiKey: "AIzaSyA86bFqzVk8ukOzjf3E61J9YEBzolj2Wb0",
         authDomain: "gamereview-bb9af.firebaseapp.com",

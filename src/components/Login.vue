@@ -56,7 +56,8 @@
         },
 
         created() {
-            console.clear();
+            document.title = "Accedi - Game Review";
+
             if (this.user.loggedIn)
                 this.$router.replace("/");
         },

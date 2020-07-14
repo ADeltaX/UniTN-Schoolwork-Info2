@@ -47,7 +47,8 @@
         },
 
         created() {
-            //console.clear();
+            document.title = "Impostazioni - Game Review";
+
             if (!this.user.loggedIn)
                 this.$router.replace("/");
         },

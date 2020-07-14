@@ -197,7 +197,8 @@
             console.log(url);
             axios.get(url).then((response) => {
                 this.game = response.data;
-                this.checkFav(this.gid, this.user.data.email);
+                if (this.user.loggedIn)
+                    this.checkFav(this.gid, this.user.data.email);
                 this.loaded = true;
             })
             .catch((error) => {

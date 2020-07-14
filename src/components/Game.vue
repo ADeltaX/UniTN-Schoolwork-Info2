@@ -199,7 +199,9 @@
             console.log(url);
             axios.get(url).then((response)=>{
                 this.game = response.data;
-                //console.log(response);
+                this.checkFav(this.gid,this.user.data.email);
+
+                //console.log(self.game);
             })
             .catch((error)=>{
                 console.log(error.response.status); //probably is a HTTP 404...
@@ -219,7 +221,9 @@
                     this.$router.replace({ name: "notFound" });
 
                 //checkFav
-                this.checkFav(this.gid,this.user.data.email)
+
+
+
 
                 let doc = db.collection("reviews").doc(id);
                 //console.log("this:");
@@ -237,6 +241,7 @@
                     console.log("Error getting document:", error);
                 });
             }
+
             this.loadMore();
             this.$forceUpdate();
 

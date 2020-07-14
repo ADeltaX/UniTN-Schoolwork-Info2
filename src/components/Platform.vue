@@ -9,7 +9,7 @@
                 <router-link :to="`/game/${game.id}/`">
                     <md-card-media-cover md-solid>
                         <md-card-media md-big>
-                            <div class="img-container" :style='{ backgroundImage: "url(" + foes.getResizedImage(game.short_screenshots[0].image) + ")", }'></div>
+                            <div class="img-container" :style='{ backgroundImage: "url(" + foes.getResizedImage(game.short_screenshots.length > 0 ? game.short_screenshots[0].image : null) + ")", }'></div>
                         </md-card-media>
                         <md-card-area>
                             <md-card-header>

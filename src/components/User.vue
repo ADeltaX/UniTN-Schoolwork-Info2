@@ -12,7 +12,7 @@
             </md-card-content>
             <md-card-actions>
                 <md-button class="md-raised" @click="nuclearOption(user.data.email)">Elimina account</md-button>
-                <md-button class="md-raised md-primary" @click="update(user.data.email,user.data.displayName )">Aggiorna</md-button>
+                <md-button class="md-raised md-primary" @click="update(user.data.email, user.data.displayName)">Aggiorna</md-button>
             </md-card-actions>
         </md-card>
         <md-snackbar md-position="left" :md-active.sync="showSnackbar">

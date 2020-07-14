@@ -4,7 +4,7 @@
             <md-card-header>
                 <md-card-header-text>
                     <span class="md-title">
-                        {{game.name}}
+                        <!-- {{game.name}} -->
                     </span>
                     <md-button v-if="user.loggedIn"
                             class="md-icon-button" @click.prevent
@@ -29,7 +29,7 @@
                             <ul>
                                 <li v-for="devs in game.developers"
                                     :key="devs.id">
-                                    {{devs.name}}
+                                    <!-- {{devs.name}} -->
                                 </li>
                             </ul>
                         </md-table-cell>
@@ -42,7 +42,7 @@
                             <ul>
                                 <li v-for="gen in game.genres"
                                     :key="gen.id">
-                                    {{gen.name}}
+                                    <!-- {{gen.name}} -->
                                 </li>
                             </ul>
                         </md-table-cell>
@@ -55,10 +55,12 @@
                             <ul>
                                 <li v-for="plat in game.platforms"
                                     :key="plat.id">
-                                    {{plat.platform.name}}
+                                    <pre></pre>
+                                    <!-- {{plat.platform.name}} -->
                                     <pre></pre>
                                     <strong>Release date</strong>:
                                     {{plat.released_at}}
+                                    
                                 </li>
                             </ul>
                         </md-table-cell>
@@ -78,7 +80,7 @@
                             <ul>
                                 <li v-for="st in game.stores"
                                     :key="st.id">
-                                    {{st.store.name}}:{{st.url}}
+                                    <!-- {{st.store.name}}: <a :href="st.url"> {{st.url}} </a> -->
                                 </li>
                             </ul>
 
@@ -123,8 +125,8 @@
                 </template>
             </md-card-content>
             <md-card-actions>
-                <md-button class="md-raised" @click="update(user.data.email,game.id)" v-if="rexists">UPDATE</md-button>
-                <md-button class="md-raised" @click="submit(user.data.email,game.id)" v-else>SUBMIT</md-button>
+                <md-button class="md-raised" @click="update(user.data.email, game.id)" v-if="rexists">UPDATE</md-button>
+                <md-button class="md-raised" @click="submit(user.data.email, game.id)" v-else>SUBMIT</md-button>
             </md-card-actions>
         </md-card>
         <md-snackbar md-position="left" :md-active.sync="showSnackbar">
@@ -220,14 +222,8 @@
                 else
                     this.$router.replace({ name: "notFound" });
 
-                //checkFav
-
-
-
-
                 let doc = db.collection("reviews").doc(id);
-                //console.log("this:");
-                //console.log(this);
+
                 doc.get().then(function (doc) {
                     if (doc.exists) {
                         console.log("review already exists")
@@ -244,11 +240,8 @@
 
             this.loadMore();
             this.$forceUpdate();
-
         },
         methods: {
-
-
             checkFav(gameId, userId) {
 
                 let id = "".concat(userId).concat('-').concat(gameId);
@@ -262,7 +255,6 @@
                 }).catch(function (error) {
                     console.error("Error reading document: ", error);
                 });
-
             },
 
             addFav(gameId, userId) {
@@ -294,13 +286,10 @@
                 }
             },
 
-            submit(userId,gameId){
+            submit(userId, gameId){
                 let db = firebase.firestore();
                 let id = userId.concat("-").concat(gameId);
                 let self = this;
-
-               /* console.error(this.review.title)
-                console.error(this.review.text)*/
 
                 if(this.review.title === ""|| this.review.text === "")
                 {
@@ -309,43 +298,39 @@
                     console.error("Errore titolo e descrizione")
 
                     return;
-
                 }
+
                 if(this.review.title.length > 30 || this.review.text.length > 500)
                 {
                     this.showSnackbar = true;
                     this.error="Titolo e descrizione non devono superare le dimensioni indicate";
-                    console.error("Errore titolo e descrizione")
-
+                    console.error("Errore titolo e descrizione");
                     return;
-
                 }
-                if(this.review.score <= 0|| this.review.score > 100)
-                {
+
+                if(this.review.score <= 0|| this.review.score > 100) {
                     this.showSnackbar = true;
                     this.error="Lo score deve essere compreso tra 0 e 100";
-                    console.error("Errore score")
-                  //  this.score=60;
-                   // this.$forceUpdate();
+                    console.error("Errore score");
                     return;
                 }
+
                 db.collection("reviews").doc(id).set({
                     "user-id": userId,
                     "game-id": gameId,
-                    title:this.review.title,
-                    rating:this.review.score,
-                    text:this.review.text,
-                    upvotes:0,
-                    downvotes:0
-
+                    title: this.review.title,
+                    rating: this.review.score,
+                    text: this.review.text,
+                    upvotes: 0,
+                    downvotes: 0
                 })
-                    .then(function() {
-                        console.log("Review aggiunta con successo");
-                        self.$router.go();
-                    })
-                    .catch(function(error) {
-                        console.error("Error writing document(review): ", error);
-                    });
+                .then(function() {
+                    console.log("Review aggiunta con successo");
+                    self.$router.go();
+                })
+                .catch(function(error) {
+                    console.error("Error writing document(review): ", error);
+                });
             },
 
             update(userId,gameId)
@@ -353,48 +338,42 @@
                 let db = firebase.firestore();
                 let id = userId.concat("-").concat(gameId);
                 let doc = db.collection("reviews").doc(id);
-                let self=this;
+                let self = this;
 
-                if(this.review.title === ""|| this.review.text === "")
-                {
+                if(this.review.title === "" || this.review.text === "") {
                     this.showSnackbar = true;
                     this.error="Titolo e descrizione sono obbligatori";
-                    console.error("Errore titolo e descrizione")
-
+                    console.error("Errore titolo e descrizione");
                     return;
-
                 }
-                if(this.review.title.length > 30 || this.review.text.length > 500)
-                {
+
+                if(this.review.title.length > 30 || this.review.text.length > 500) {
                     this.showSnackbar = true;
                     this.error="Titolo e descrizione non devono superare le dimensioni indicate";
-                    console.error("Errore titolo e descrizione")
-
+                    console.error("Errore titolo e descrizione");
                     return;
-
                 }
-                if(this.review.score <= 0|| this.review.score > 100)
-                {
+
+                if(this.review.score <= 0 || this.review.score > 100) {
                     this.showSnackbar = true;
                     this.error="Lo score deve essere compreso tra 0 e 100";
-                    console.error("Errore score")
-                    //  this.score=60;
-                    // this.$forceUpdate();
+                    console.error("Errore score");
                     return;
                 }
-                return doc.update({
-                    title:this.review.title,
-                    rating:this.review.score,
-                    text:this.review.text
-                })
-                    .then(function() {
-                        console.log("Review successfully updated!");
-                        self.$router.go();
-                    })
-                    .catch(function(error) {
 
-                        console.error("Error updating review: ", error);
-                    });
+                return doc.update({
+                    title: this.review.title,
+                    rating: this.review.score,
+                    text: this.review.text
+                })
+                .then(function() {
+                    console.log("Review successfully updated!");
+                    self.$router.go();
+                })
+                .catch(function(error) {
+
+                    console.error("Error updating review: ", error);
+                });
             },
 
             loadMore() {

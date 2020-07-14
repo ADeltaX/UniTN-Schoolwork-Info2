@@ -28,7 +28,7 @@
                     </md-card-media-cover>
                 </router-link>
             </md-card>
-            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="10"></div>
+            <div id="load" v-infinite-scroll="loadMore" infinite-scroll-disabled="this.$g.pageLoading" infinite-scroll-distance="400"></div>
         </div>
     </div>
 </template>
@@ -69,7 +69,7 @@
 
                 try {
                     const axios = require("axios");
-                    var response = await axios.get(url);
+                    let response = await axios.get(url);
                     this.platName = response.data.name;
                 } catch {
                     //Let's ignore this for the moment.
@@ -77,6 +77,10 @@
             },
 
             loadMore() {
+
+                if (!this.canLoadMore)
+                    return;
+
                 this.$g.pageLoading = true;
                 this.page++;
                 let url

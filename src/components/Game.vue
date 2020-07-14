@@ -6,6 +6,11 @@
                     <span class="md-title">
                         {{game.name}}
                     </span>
+                    <md-button v-if="user.loggedIn"
+                            class="md-icon-button" @click.prevent
+                            @click="addFav(game.id,user.data.email)">
+                        <md-icon>{{game.user_game ? 'favorite' : 'favorite_border'}}</md-icon>
+                    </md-button>
                 </md-card-header-text>
             </md-card-header>
             <md-card-content>
@@ -158,6 +163,7 @@
             return {
                 game: null,
                 showSnackbar: false,
+                fav:false,
                 review: {
                     title: "",
                     score: 60,
@@ -212,6 +218,9 @@
                 else
                     this.$router.replace({ name: "notFound" });
 
+                //checkFav
+                this.checkFav(this.gid,this.user.data.email)
+
                 let doc = db.collection("reviews").doc(id);
                 //console.log("this:");
                 //console.log(this);
@@ -234,6 +243,51 @@
         },
         methods: {
 
+
+            checkFav(gameId, userId) {
+
+                let id = "".concat(userId).concat('-').concat(gameId);
+                let self = this;
+                let db = firebase.firestore();
+                //controlliamo se è già inserito
+                db.collection("favourites").doc(id)
+                    .get().then(function (ris) {
+                    self.game.user_game = ris.exists;
+                    console.log("Game in favs")
+                }).catch(function (error) {
+                    console.error("Error reading document: ", error);
+                });
+
+            },
+
+            addFav(gameId, userId) {
+                let id = "".concat(userId).concat("-").concat(gameId);
+                let db = firebase.firestore();
+                this.checkFav(gameId, userId);
+                // console.log(this.dev)
+                let self = this;
+
+                if(this.game.user_game)
+                {
+                    db.collection("favourites").doc(id).delete().then(function () {
+                        console.log("Document successfully deleted!");
+                        self.game.user_game = false;
+                    }).catch(function (error) {
+                        console.error("Error removing document: ", error);
+                    });
+                } else {
+                    //altrimenti lo aggiungiamo
+                    db.collection("favourites").doc(id).set({
+                        "user-id": userId,
+                        "game-id": gameId
+                    }).then(function () {
+                        console.log("Document successfully added!");
+                        self.game.user_game = true;
+                    }).catch(function (error) {
+                        console.error("Error adding document: ", error);
+                    });
+                }
+            },
 
             submit(userId,gameId){
                 let db = firebase.firestore();

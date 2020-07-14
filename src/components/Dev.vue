@@ -77,10 +77,6 @@
                 }
             },
 
-            goBack() {
-                this.$router.back();
-            },
-
             checkFavs(gameId, userId, elementId) {
 
                 let id = "".concat(userId).concat('-').concat(gameId);

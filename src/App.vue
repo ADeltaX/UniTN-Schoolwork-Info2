@@ -6,7 +6,7 @@
                     <md-button v-if="loaded" class="md-icon-button" @click="menuVisible = !menuVisible">
                         <md-icon>menu</md-icon>
                     </md-button>
-                    <span class="md-title">Game Review</span>
+                    <span class="md-title">GameReview</span>
                     <!-- <md-autocomplete
                       class="search"
                       :md-options="dataForSearchbox"
@@ -121,12 +121,12 @@
         watch: {
             $route() {
                 this.$g.pageLoading = false; //questo è un "reset" in pratica
-                document.title = "Game Review";
+                document.title = "GameReview";
             }
         },
 
         created() {
-            document.title = "Game Review";
+            document.title = "GameReview";
 
             const configOptions = {
                 apiKey: "AIzaSyA86bFqzVk8ukOzjf3E61J9YEBzolj2Wb0",

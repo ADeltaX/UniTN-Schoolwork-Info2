@@ -61,7 +61,7 @@
         },
 
         async created() {
-            document.title = "Sviluppatore - Game Review";
+            document.title = "Sviluppatore - GameReview";
             this.devName = await foes.getTitleName("https://api.rawg.io/api/developers/", this.$route.params.id);
 
             if (this.devName == null) //è successo qualcosa, quindi (per ultra semplificazione), gestiamo un solo errore e rimandiamo al 404

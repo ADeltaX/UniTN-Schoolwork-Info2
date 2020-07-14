@@ -20,6 +20,7 @@ export default {
 
         return url.replace("https://media.rawg.io/media/", "https://media.rawg.io/media/resize/" + size + "/-/");
     },
+    
     getTitleName: async function (urlBase, id) {
         let url = urlBase.concat(id);
 
@@ -27,7 +28,7 @@ export default {
             const axios = require("axios");
             let response = await axios.get(url);
             let name = response.data.name;
-            document.title = name + " - Game Review"; //Non credo sia il posto migliore...
+            document.title = name + " - GameReview"; //Alternativamente possiamo metterlo in ogni "created"
             return name;
         } catch {
             //Non è presente (404) o c'è stato un errore (40x, 50x) o manca connettività. Ambo i casi ritorniamo null.

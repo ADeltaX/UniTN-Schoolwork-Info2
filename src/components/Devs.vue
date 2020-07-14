@@ -46,7 +46,7 @@
         },
 
         created() {
-            document.title = "Sviluppatori - Game Review";
+            document.title = "Sviluppatori - GameReview";
         },
 
         methods: {

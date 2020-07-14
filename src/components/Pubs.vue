@@ -49,7 +49,7 @@
         },
 
         created: function () {
-            document.title = "Editori - Game Review";
+            document.title = "Editori - GameReview";
         },
 
         methods: {

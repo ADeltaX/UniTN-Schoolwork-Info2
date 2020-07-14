@@ -3,7 +3,7 @@
         <md-content class="md-elevation-4">
             <div class="title">
                 <img alt="logo" src="../assets/GR_Logo_256.png">
-                <div class="md-title">Game Review</div>
+                <div class="md-title">GameReview</div>
                 <div class="md-body-1">Registrati per salvare i tuoi preferiti e per recensire giochi!</div>
             </div>
             <div class="form">
@@ -61,7 +61,7 @@
         },
 
         created() {
-            document.title = "Registrati - Game Review";
+            document.title = "Registrati - GameReview";
 
             if (this.user.loggedIn)
                 this.$router.replace("/");

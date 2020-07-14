@@ -59,7 +59,7 @@
         },
         async created() {
             console.clear()
-            document.title = "Piattaforma - Game Review";
+            document.title = "Piattaforma - GameReview";
             this.platName = await foes.getTitleName("https://api.rawg.io/api/platforms/", this.$route.params.id);
 
             if (this.platName == null) //è successo qualcosa, quindi (per ultra semplificazione), gestiamo un solo errore e rimandiamo al 404

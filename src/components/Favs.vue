@@ -74,7 +74,7 @@
         },
 
         created: function () {
-            document.title = "Preferiti - Game Review";
+            document.title = "Preferiti - GameReview";
 
             if (this.user.loggedIn)
                 this.checkFavs(this.user.data.email);

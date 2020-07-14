@@ -22,9 +22,11 @@
                             {{rev.title}}
                         </span>
                         -
-                        <span class="md-subheading">
-                            {{rev.gameName}}
-                        </span>
+                        <router-link :to="`/game/${rev['game-id']}/`">
+                            <span class="md-subheading">
+                                {{rev.gameName}}
+                            </span>
+                        </router-link>
                     </md-card-header>
                     <md-card-content>
                         <md-card-content style="overflow: hidden; min-height: 60px; max-height: 200px;">
@@ -42,11 +44,12 @@
                                 @click.stop="remRev(rev['game-id'], user.data.email, revs.indexOf(rev))">
                             <md-icon>delete</md-icon>
                         </md-button>
-                        <md-button
-                                class="md-icon-button"
-                                @click.stop="foes.goSpecific($router, { name: 'game', params: { id: rev['game-id'] } })">
-                            <md-icon>arrow_forward</md-icon>
-                        </md-button>
+                        <router-link :to="`/game/${rev['game-id']}/`">
+                            <md-button
+                                class="md-icon-button">
+                                <md-icon>arrow_forward</md-icon>
+                            </md-button>
+                        </router-link>
                     </md-card-actions>
                 </md-card>
             </div>
@@ -77,7 +80,7 @@
         },
 
         created() {
-            document.title = "Recensioni - Game Review";
+            document.title = "Recensioni - GameReview";
 
             if (this.user.loggedIn)
                 this.load(this.user.data.email);

@@ -19,7 +19,7 @@
             }
         },
         created() {
-            document.title = "Non trovato - Game Review";
+            document.title = "Non trovato - GameReview";
         }
     }
 </script>

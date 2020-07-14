@@ -47,7 +47,7 @@
             };
         },
         created() {
-            document.title = "Piattaforme - Game Review";
+            document.title = "Piattaforme - GameReview";
         },
 
         methods: {

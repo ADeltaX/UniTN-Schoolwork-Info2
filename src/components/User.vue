@@ -49,7 +49,7 @@
         },
 
         created() {
-            document.title = "Impostazioni - Game Review";
+            document.title = "Impostazioni - GameReview";
 
             if (!this.user.loggedIn)
                 this.$router.replace("/");

@@ -129,13 +129,13 @@
             document.title = "GameReview";
 
             const configOptions = {
-                apiKey: "AIzaSyA86bFqzVk8ukOzjf3E61J9YEBzolj2Wb0",
-                authDomain: "gamereview-bb9af.firebaseapp.com",
-                databaseURL: "https://gamereview-bb9af.firebaseio.com",
-                projectId: "gamereview-bb9af",
-                storageBucket: "gamereview-bb9af.appspot.com",
-                messagingSenderId: "228925046389",
-                appId: "1:228925046389:web:e33f2978a7a8757812823c"
+                apiKey: "apikey",
+                authDomain: "domain",
+                databaseURL: "dburl",
+                projectId: "projectId",
+                storageBucket: "storageBucket",
+                messagingSenderId: "msi",
+                appId: "id"
             };
 
             !firebase.apps.length ? firebase.initializeApp(configOptions) : firebase.app();

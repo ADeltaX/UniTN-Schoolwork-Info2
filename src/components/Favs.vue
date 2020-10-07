@@ -92,7 +92,7 @@
                 //console.log(userId);
                 //controlliamo se è già inserito
                 db.collection("favourites").where("user-id", "==", userId).get().then(function (doc) {
-                    //  console.log(doc);
+                      //console.log(doc);
                     if (!doc.empty) {
                         self.favs = doc.docs.map(doc => doc.data());
                         // self.page +=10;

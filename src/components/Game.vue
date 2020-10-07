@@ -36,7 +36,7 @@
                         </md-table-row>
                         <md-table-row>
                             <md-table-cell>
-                                <a>{{game.website}}</a>
+                                <a :href="game.website">{{game.website}}</a>
                                 <p>Link to stores:</p>
                                 <ul>
                                     <li v-for="st in game.stores"
@@ -82,6 +82,7 @@
                             </md-table-cell>
                         </md-table-row>
                     </md-table>
+
                     <br>
                 </md-card-content>
             </md-card>
@@ -186,6 +187,7 @@
             this.$g.pageLoading = true;
             document.title = "Gioco - GameReview";
             const axios = require("axios");
+
 
             let url;
 
@@ -429,7 +431,6 @@
 
 <style scoped>
     .md-card {
-        width: fit-content;
         height: fit-content;
         margin: 4px;
         display: inline-block;

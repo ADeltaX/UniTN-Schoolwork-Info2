@@ -74,6 +74,8 @@
                 const axios = require("axios");
                 let url = "https://api.rawg.io/api/games?page=".concat(this.page);
                 axios.get(url).then((response) => {
+
+                  // console.log(response)
                     this.games = this.games.concat(response.data.results);
 
                     if (this.user.loggedIn) {
